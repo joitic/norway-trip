@@ -4,23 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>挪威冬日旅程 2026</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700;900&display=swap');
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f0f4f8; }
         [v-cloak] { display: none; }
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f0f4f8; margin: 0; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
         .card-shadow { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .active-card { background-color: #000000 !important; color: #ffffff !important; }
         .active-card .text-zinc-400 { color: rgba(255,255,255,0.5) !important; }
         .active-card .icon-bg { background-color: rgba(255,255,255,0.2) !important; }
         .active-card .route-badge { background-color: #ffffff; color: #000000; }
         .active-card .route-text { color: #7dd3fc; }
-        .content-up { border-top-left-radius: 32px; border-top-right-radius: 32px; }
+
+        .content-up { border-top-left-radius: 32px; border-top-right-radius: 32px; background-color: #f0f4f8; position: relative; top: -30px; }
     </style>
 </head>
 <body>
@@ -29,8 +32,7 @@
         <header class="relative h-[250px] w-full overflow-hidden">
             <img src="./banner.jpg" class="w-full h-full object-cover" alt="Norway Fjord" onerror="this.src='https://images.unsplash.com/photo-1520106212299-d99c443e4568?auto=format&fit=crop&w=1920&q=80'">
             <div class="absolute inset-0 bg-black/10"></div>
-            
-            <div class="absolute bottom-12 right-4 flex gap-2">
+            <div class="absolute bottom-16 right-4 flex gap-2">
                 <button v-for="tab in tabs" :key="tab.id" @click="currentTab = tab.id"
                     :class="['p-3 rounded-full transition-all duration-300 shadow-xl backdrop-blur-md', currentTab === tab.id ? 'bg-[#0c4a6e] text-white scale-110' : 'bg-white/80 text-[#0c4a6e]']">
                     <i :data-lucide="tab.icon" class="w-5 h-5"></i>
@@ -38,139 +40,158 @@
             </div>
         </header>
 
-        <main class="relative -mt-8 px-4 pb-32">
-            <div class="bg-[#f0f4f8] content-up pt-6 min-h-screen">
-                
-                <!-- 行程分頁 -->
-                <section v-if="currentTab === 'itinerary'" class="px-2">
-                    <div class="flex items-center justify-between mb-4 px-2">
-                        <div class="flex items-center gap-3">
-                            <div class="bg-white p-3 rounded-2xl border border-zinc-200 shadow-sm"><i data-lucide="calendar" class="w-6 h-6 text-zinc-600"></i></div>
-                            <div>
-                                <div class="text-[10px] text-zinc-400 font-black uppercase tracking-widest">{{ currentDay.dateLabel }}</div>
-                                <div class="text-xl font-black text-zinc-800">{{ currentDay.title }}</div>
-                            </div>
-                        </div>
-                        <div class="flex gap-2">
-                            <button @click="prevDay" class="p-2 bg-white rounded-full border border-zinc-200 shadow-sm"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
-                            <button @click="nextDay" class="p-2 bg-white rounded-full border border-zinc-200 shadow-sm"><i data-lucide="chevron-right" class="w-6 h-6"></i></button>
+        <main class="content-up px-4 pb-32">
+            <!-- 1. 每日行程表 -->
+            <section v-if="currentTab === 'itinerary'">
+                <div class="flex items-center justify-between mb-4 pt-4 px-1">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-white p-3 rounded-2xl border border-zinc-200 shadow-sm"><i data-lucide="calendar" class="w-6 h-6 text-zinc-600"></i></div>
+                        <div>
+                            <div class="text-[10px] text-zinc-400 font-black uppercase tracking-widest">{{ currentDayData.dateLabel }}</div>
+                            <div class="text-xl font-black text-zinc-800">{{ currentDayData.title }}</div>
                         </div>
                     </div>
-
-                    <div class="flex overflow-x-auto hide-scrollbar gap-2 mb-6">
-                        <button v-for="(day, index) in travelDays" :key="index" @click="selectedDayIndex = index"
-                             :class="['flex-shrink-0 px-4 py-2 rounded-full border text-sm font-bold transition-all whitespace-nowrap', selectedDayIndex === index ? 'bg-black text-white border-black shadow-lg' : 'bg-white text-zinc-400 border-zinc-200']">
-                            D{{index + 1}} · {{ day.date }}
-                        </button>
+                    <div class="flex gap-2">
+                        <button @click="prevDay" class="p-2 bg-white rounded-full border border-zinc-200 active:bg-zinc-100"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
+                        <button @click="nextDay" class="p-2 bg-white rounded-full border border-zinc-200 active:bg-zinc-100"><i data-lucide="chevron-right" class="w-6 h-6"></i></button>
                     </div>
+                </div>
 
-                    <div class="space-y-4">
-                        <div v-for="item in currentDayItems" :key="item.id" @click="handleCardClick(item)"
-                             :class="['relative rounded-[28px] p-5 card-shadow transition-all active:scale-[0.97]', selectedCardId === item.id ? 'active-card' : 'bg-white text-zinc-900']">
-                            
-                            <div class="flex justify-between items-start mb-2">
-                                <div class="flex items-center gap-3">
-                                    <div :class="['p-2 rounded-xl icon-bg', selectedCardId === item.id ? 'bg-white/20' : 'bg-zinc-100']"><i :data-lucide="getCategoryIcon(item.category)" class="w-5 h-5 text-zinc-600"></i></div>
-                                    <div class="text-[10px] font-black uppercase tracking-widest text-zinc-400">{{ item.category }}</div>
-                                </div>
-                                <div class="text-xs font-bold">{{ item.time }}</div>
+                <!-- 日期選擇 -->
+                <div class="flex overflow-x-auto hide-scrollbar gap-2 mb-6">
+                    <button v-for="(day, index) in travelDays" :key="index" @click="selectedDayIndex = index"
+                         :class="['flex-shrink-0 px-4 py-2 rounded-full border text-sm font-bold transition-all whitespace-nowrap', selectedDayIndex === index ? 'bg-black text-white border-black shadow-lg' : 'bg-white text-zinc-400 border-zinc-200']">
+                        D{{index + 1}} · {{ day.date }}
+                    </button>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- 行程項目 -->
+                    <div v-for="item in currentDayItems" :key="item.id" @click="handleCardClick(item)"
+                         :class="['relative rounded-[28px] p-5 card-shadow transition-all active:scale-[0.97]', selectedCardId === item.id ? 'active-card' : 'bg-white text-zinc-900 border border-zinc-50']">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex items-center gap-3">
+                                <div :class="['p-2 rounded-xl icon-bg shadow-sm', selectedCardId === item.id ? 'bg-white/20' : 'bg-zinc-100']"><i :data-lucide="getCategoryIcon(item.category)" class="w-5 h-5 text-zinc-600"></i></div>
+                                <div class="text-[10px] font-black uppercase tracking-widest text-zinc-400">{{ item.category }}</div>
                             </div>
-
-                            <div class="ml-12">
-                                <h3 class="text-lg font-black leading-tight">{{ item.name }}</h3>
-                                <div v-if="item.direction" class="mt-2 flex items-start gap-2">
-                                    <span class="route-badge mt-0.5 flex-shrink-0 bg-blue-600 text-white text-[9px] px-1.5 py-0.5 rounded font-black uppercase">路線</span>
-                                    <span class="route-text text-xs font-black text-blue-700 leading-snug">{{ item.direction }}</span>
-                                </div>
-                                <div class="text-xs font-medium mt-1 opacity-60">{{ item.place }}</div>
-                                <div v-if="item.reminders" class="mt-4 p-3 rounded-2xl border transition-all" :class="selectedCardId === item.id ? 'bg-white/10 border-white/20 text-white' : 'bg-amber-50 border-amber-100 text-amber-900'">
-                                    <div class="flex items-center gap-1 font-black text-[10px] mb-1 uppercase opacity-80"><i data-lucide="info" class="w-3 h-3"></i> 長輩提醒</div>
-                                    <p class="text-[11px] leading-relaxed font-medium whitespace-pre-line">{{ item.reminders }}</p>
-                                </div>
+                            <div class="text-xs font-bold">{{ item.time }}</div>
+                        </div>
+                        <div class="ml-12">
+                            <h3 class="text-lg font-black leading-tight">{{ item.name }}</h3>
+                            <div v-if="item.direction" class="mt-2 flex items-start gap-2">
+                                <span class="route-badge mt-0.5 flex-shrink-0 bg-blue-600 text-white text-[9px] px-1.5 py-0.5 rounded font-black uppercase">路線</span>
+                                <span class="route-text text-xs font-black text-blue-700 leading-snug">{{ item.direction }}</span>
+                            </div>
+                            <div class="text-xs font-medium mt-1 opacity-60">{{ item.place }}</div>
+                            <div v-if="item.reminders" class="mt-4 p-4 rounded-2xl border text-[11px] leading-relaxed font-medium transition-all" :class="selectedCardId === item.id ? 'bg-white/10 border-white/20 text-white' : 'bg-amber-50 border-amber-100 text-amber-900'">
+                                <div class="flex items-center gap-1 font-black mb-1 opacity-80 uppercase tracking-widest"><i data-lucide="info" class="w-3 h-3"></i> 長輩小叮嚀</div>
+                                <p class="whitespace-pre-line">{{ item.reminders }}</p>
                             </div>
                         </div>
+                        <div v-if="['航班', '火車', '乘船', '活動'].includes(item.category)" class="absolute right-5 top-5 opacity-20"><i data-lucide="chevron-right" class="w-4 h-4"></i></div>
+                    </div>
 
-                        <!-- 住宿總結卡 (含地名) -->
-                        <div v-if="lodgingForToday" @click="goToHotel(lodgingForToday.id)" class="relative rounded-[28px] p-5 card-shadow bg-white text-zinc-900 border border-zinc-100 active:scale-[0.97] transition-all">
-                            <div class="absolute top-5 right-6 text-[10px] font-bold text-zinc-400">夜宿</div>
-                            <div class="flex justify-between items-start mb-2">
-                                <div class="flex items-center gap-3">
-                                    <div class="p-2 rounded-xl bg-zinc-100"><i data-lucide="hotel" class="w-5 h-5 text-zinc-600"></i></div>
-                                    <div class="text-[10px] font-black uppercase tracking-widest text-zinc-400">住宿</div>
-                                </div>
-                            </div>
-                            <div class="ml-12">
-                                <h3 class="text-lg font-black leading-tight">{{ lodgingForToday.name }}</h3>
-                                <div class="text-xs font-bold mt-1 text-zinc-800">{{ lodgingForToday.locationLabel }}</div>
-                            </div>
+                    <!-- 每日結尾住宿卡 -->
+                    <div v-if="lodgingForToday" @click="goToHotel(lodgingForToday.id)" class="relative rounded-[28px] p-5 card-shadow bg-white text-zinc-900 border border-zinc-100 active:scale-[0.97]">
+                        <div class="absolute top-5 right-6 text-[10px] font-bold text-zinc-400">夜宿</div>
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="p-2 rounded-xl bg-zinc-100"><i data-lucide="hotel" class="w-5 h-5 text-zinc-600"></i></div>
+                            <div class="text-[10px] font-black uppercase tracking-widest text-zinc-400">住宿</div>
+                        </div>
+                        <div class="ml-12">
+                            <h3 class="text-lg font-black leading-tight">{{ lodgingForToday.name }}</h3>
+                            <div class="text-xs font-bold mt-1 text-zinc-800">{{ lodgingForToday.locationLabel }}</div>
                         </div>
                     </div>
-                </section>
+                </div>
+            </section>
 
-                <!-- 資訊分頁 -->
-                <section v-if="currentTab === 'info'" class="space-y-6">
-                    <div class="flex bg-zinc-200 p-1 rounded-2xl mx-2 shadow-inner">
-                        <button @click="infoSubTab = 'flight'" :class="['flex-1 py-3 rounded-xl text-sm font-black transition-all', infoSubTab === 'flight' ? 'bg-white text-black shadow-sm' : 'text-zinc-500']">航班登機證</button>
-                        <button @click="infoSubTab = 'hotel'" :class="['flex-1 py-3 rounded-xl text-sm font-black transition-all', infoSubTab === 'hotel' ? 'bg-white text-black shadow-sm' : 'text-zinc-500']">住宿飯店</button>
-                    </div>
+            <!-- 2. 資訊頁 -->
+            <section v-if="currentTab === 'info'" class="space-y-6 pt-4">
+                <div class="flex bg-zinc-200 p-1 rounded-2xl shadow-inner mx-2">
+                    <button @click="infoSubTab = 'flight'" :class="['flex-1 py-3 rounded-xl text-[10px] font-black transition-all', infoSubTab === 'flight' ? 'bg-white shadow-sm text-black' : 'text-zinc-500']">航班登機證</button>
+                    <button @click="infoSubTab = 'ticket'" :class="['flex-1 py-3 rounded-xl text-[10px] font-black transition-all', infoSubTab === 'ticket' ? 'bg-white shadow-sm text-black' : 'text-zinc-500']">交通與票券</button>
+                    <button @click="infoSubTab = 'hotel'" :class="['flex-1 py-3 rounded-xl text-[10px] font-black transition-all', infoSubTab === 'hotel' ? 'bg-white shadow-sm text-black' : 'text-zinc-500']">住宿飯店</button>
+                </div>
 
-                    <!-- 航班 -->
-                    <div v-if="infoSubTab === 'flight'" class="mx-2 space-y-6">
-                        <div class="bg-white rounded-[32px] p-1 shadow-2xl overflow-hidden border border-white">
-                            <div class="bg-[#0c4a6e] p-6 text-white rounded-t-[32px]">
-                                <h2 class="text-xl font-black flex items-center gap-2"><i data-lucide="ticket"></i> 票券查詢</h2>
-                                <div class="flex overflow-x-auto hide-scrollbar gap-2 mt-4">
-                                    <button v-for="(f, idx) in flights" @click="activeFlightIndex = idx" :class="['flex-shrink-0 px-4 py-2 rounded-xl text-[10px] font-black border transition-all whitespace-nowrap', activeFlightIndex === idx ? 'bg-white text-[#0c4a6e]' : 'bg-white/10 text-white border-white/20']">{{ f.no }}</button>
+                <!-- 成員選單 -->
+                <div v-if="infoSubTab !== 'hotel'" class="flex overflow-x-auto hide-scrollbar gap-2 px-4 py-2">
+                    <button v-for="p in people" @click="activePersonId = p.id" :class="['flex-shrink-0 px-5 py-2 rounded-full text-xs font-bold border transition-all', activePersonId === p.id ? 'bg-black text-white shadow-md' : 'bg-white text-zinc-400 border-zinc-200']">{{ p.name }}</button>
+                </div>
+
+                <!-- 航班子頁 -->
+                <div v-if="infoSubTab === 'flight'" class="space-y-4 px-2">
+                    <div class="bg-white rounded-[32px] p-1 shadow-2xl border border-white overflow-hidden">
+                        <div class="bg-[#0c4a6e] p-6 text-white rounded-t-[32px]">
+                            <div class="flex overflow-x-auto hide-scrollbar gap-2">
+                                <button v-for="(f, idx) in flights" @click="activeFlightIndex = idx" :class="['px-4 py-2 rounded-xl flex-shrink-0 text-[10px] font-black border transition-all', activeFlightIndex === idx ? 'bg-white text-[#0c4a6e]' : 'bg-white/10 text-white border-white/20']">{{ f.no }}</button>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div :class="['rounded-3xl p-6 text-white mb-6 shadow-xl relative overflow-hidden', activeFlight.color]">
+                                <div class="text-2xl font-black italic mb-6 uppercase">{{ activeFlight.no }}</div>
+                                <div class="flex justify-between items-center border-b border-white/20 pb-4 mb-4 text-left">
+                                    <div><div class="text-3xl font-black">{{ activeFlight.from }}</div><div class="text-xs">{{ activeFlight.depTime }}</div></div>
+                                    <i data-lucide="move-right" class="opacity-40"></i>
+                                    <div class="text-right"><div class="text-3xl font-black">{{ activeFlight.to }}</div><div class="text-xs">{{ activeFlight.arrTime }}</div></div>
+                                </div>
+                                <div class="flex justify-between items-end">
+                                    <div><div class="text-[10px] opacity-60 uppercase">Passenger</div><div class="text-lg font-black leading-none">{{ activePersonName }}</div></div>
+                                    <div class="text-right"><div class="text-[10px] opacity-60 uppercase font-black">PNR</div><div class="text-xl font-mono font-black tracking-tighter">{{ activeFlight.pnrGroup[activePersonId] }}</div></div>
                                 </div>
                             </div>
-                            <div class="flex overflow-x-auto hide-scrollbar gap-2 p-4 bg-zinc-50 border-b">
-                                <button v-for="p in people" @click="activePersonId = p.id" :class="['flex-shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-all', activePersonId === p.id ? 'bg-black text-white' : 'bg-white text-zinc-400 border']">{{ p.name }}</button>
-                            </div>
-                            <div class="p-6">
-                                <div :class="['rounded-3xl p-6 text-white mb-6 shadow-2xl relative overflow-hidden', flights[activeFlightIndex].color]">
-                                    <div class="flex justify-between items-center mb-6 relative z-10 font-black italic text-2xl">{{ flights[activeFlightIndex].no }}</div>
-                                    <div class="flex justify-between items-center relative z-10 border-b border-white/20 pb-6 mb-6">
-                                        <div class="text-left"><div class="text-3xl font-black">{{ flights[activeFlightIndex].from }}</div><div class="text-sm font-bold">{{ flights[activeFlightIndex].depTime }}</div></div>
-                                        <i data-lucide="move-right" class="w-6 h-6 opacity-40"></i>
-                                        <div class="text-right"><div class="text-3xl font-black">{{ flights[activeFlightIndex].to }}</div><div class="text-sm font-bold">{{ flights[activeFlightIndex].arrTime }}</div></div>
-                                    </div>
-                                    <div class="flex justify-between items-end relative z-10">
-                                        <div><div class="text-[10px] opacity-60">PASSENGER</div><div class="text-lg font-black">{{ people.find(p=>p.id===activePersonId).name }}</div></div>
-                                        <div class="text-right"><div class="text-[10px] opacity-60 font-black">PNR</div><div class="text-2xl font-mono font-black tracking-tighter">{{ flights[activeFlightIndex].pnrGroup[activePersonId] }}</div></div>
-                                    </div>
-                                </div>
-                                <div class="bg-zinc-50 p-6 rounded-[32px] border-2 border-dashed border-zinc-200 text-center">
-                                    <div class="bg-white p-4 rounded-2xl inline-block shadow-md">
-                                        <img :src="`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${activePersonId}_${flights[activeFlightIndex].no}_${flights[activeFlightIndex].pnrGroup[activePersonId]}`" class="w-40 h-40">
-                                    </div>
-                                </div>
+                            <div class="text-center bg-zinc-50 p-6 rounded-[32px] border-2 border-dashed border-zinc-200">
+                                <img :src="`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${activeFlight.no}_${activePersonId}`" class="w-40 h-40 mx-auto shadow-md rounded-2xl bg-white p-2">
+                                <div v-if="activeFlight.notes" class="mt-4 p-4 bg-white/60 text-zinc-600 text-left rounded-2xl text-[11px] leading-relaxed border border-zinc-100 whitespace-pre-line">{{ activeFlight.notes }}</div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- 飯店 -->
-                    <div v-if="infoSubTab === 'hotel'" class="px-2 space-y-4">
-                        <div v-for="hotel in hotels" :key="hotel.id" :id="'hotel-' + hotel.id" class="bg-white rounded-[32px] overflow-hidden shadow-xl border border-white">
-                            <div class="bg-orange-500 p-6 text-white">
-                                <div class="flex justify-between items-start">
-                                    <div><div class="text-[10px] font-black uppercase tracking-widest opacity-60">Hotel Info</div><h2 class="text-xl font-black mt-1">{{ hotel.name }}</h2></div>
-                                    <i data-lucide="hotel" class="w-10 h-10 opacity-30"></i>
+                <!-- 票券子頁 -->
+                <div v-if="infoSubTab === 'ticket'" class="space-y-4 px-2">
+                    <div class="bg-white rounded-[32px] p-1 shadow-2xl border border-white overflow-hidden">
+                        <div class="bg-emerald-700 p-6 text-white rounded-t-[32px]">
+                            <div class="flex overflow-x-auto hide-scrollbar gap-2">
+                                <button v-for="(t, idx) in specialTickets" @click="activeTicketIndex = idx" :class="['px-4 py-2 rounded-xl flex-shrink-0 text-[10px] font-black border transition-all', activeTicketIndex === idx ? 'bg-white text-emerald-800' : 'bg-white/10 text-white border-white/20']">{{ t.btnName }}</button>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="bg-emerald-600 rounded-3xl p-6 text-white mb-6 shadow-xl relative overflow-hidden">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div><div class="text-[10px] font-black uppercase opacity-60">{{ activeTicket.kind }}</div><h2 class="text-xl font-black mt-1">{{ activeTicket.name }}</h2></div>
+                                    <i :data-lucide="activeTicket.icon" class="w-8 h-8 opacity-30"></i>
+                                </div>
+                                <div class="mt-8 pt-6 border-t border-white/20 flex justify-between items-end">
+                                    <div class="font-black">{{ activePersonName }}</div>
+                                    <div class="font-mono text-xl font-black">{{ activeTicket.code }}</div>
                                 </div>
                             </div>
-                            <div class="p-6 space-y-5">
-                                <div class="flex items-start gap-4"><div class="bg-zinc-100 p-3 rounded-2xl"><i data-lucide="map-pin" class="w-5 h-5 text-zinc-500"></i></div><div><div class="text-xs font-black text-zinc-400">城市 / 期間</div><div class="text-base font-bold text-zinc-800">{{ hotel.locationLabel }}</div></div></div>
-                                <div class="flex items-start gap-4"><div class="bg-zinc-100 p-3 rounded-2xl"><i data-lucide="ticket" class="w-5 h-5 text-zinc-500"></i></div><div><div class="text-xs font-black text-zinc-400">訂單編號</div><div class="text-base font-bold text-zinc-800">{{ hotel.code }}</div></div></div>
-                                <div class="flex items-start gap-4"><div class="bg-zinc-100 p-3 rounded-2xl"><i data-lucide="navigation" class="w-5 h-5 text-zinc-500"></i></div><div class="flex-1"><div class="text-xs font-black text-zinc-400">地址</div><div class="text-sm font-bold text-zinc-800">{{ hotel.address }}</div><button @click="openNavigation(hotel.address)" class="mt-2 text-blue-600 font-black text-xs underline">開啟導航</button></div></div>
-                                <div class="flex items-start gap-4"><div class="bg-zinc-100 p-3 rounded-2xl"><i data-lucide="phone" class="w-5 h-5 text-zinc-500"></i></div><div><div class="text-xs font-black text-zinc-400">電話</div><a :href="'tel:'+hotel.phone" class="text-base font-bold text-blue-600 underline">{{ hotel.phone }}</a></div></div>
-                                <div class="bg-amber-50 p-4 rounded-2xl border border-amber-100 text-sm font-medium text-amber-900 leading-relaxed">{{ hotel.notes }}</div>
+                            <div class="text-center bg-zinc-50 p-6 rounded-[32px] border-2 border-dashed border-zinc-200">
+                                <img v-if="activeTicket.qrKey" :src="`${qrBase}/${activeTicket.qrKey}_${activePersonId}.png`" class="w-44 h-44 mx-auto shadow-md rounded-2xl bg-white p-2" onerror="this.src='https://via.placeholder.com/200?text=Ticket+QR'">
+                                <div v-if="activeTicket.notes" class="mt-4 p-4 bg-white text-[11px] text-zinc-600 rounded-2xl text-left border border-zinc-100 leading-relaxed whitespace-pre-line">{{ activeTicket.notes }}</div>
                             </div>
                         </div>
                     </div>
-                </section>
-            </div>
+                </div>
+
+                <!-- 飯店資訊 -->
+                <div v-if="infoSubTab === 'hotel'" class="px-2 space-y-4">
+                    <div v-for="hotel in hotels" :key="hotel.id" :id="'hotel-' + hotel.id" class="bg-white rounded-[32px] overflow-hidden shadow-xl border border-white">
+                        <div class="bg-orange-500 p-6 text-white"><h2 class="text-xl font-black italic tracking-tight">{{ hotel.name }}</h2></div>
+                        <div class="p-6 space-y-4 text-sm">
+                            <div class="flex items-center gap-3 text-zinc-500 font-bold"><i data-lucide="map-pin" class="w-4 h-4"></i> {{ hotel.locationLabel }}</div>
+                            <div class="flex items-center gap-3 text-zinc-500"><i data-lucide="ticket" class="w-4 h-4"></i> {{ hotel.code }}</div>
+                            <div class="flex items-start gap-3 text-zinc-800 font-black leading-snug"><i data-lucide="navigation" class="w-4 h-4 text-blue-500 mt-1"></i> {{ hotel.address }}</div>
+                            <button @click="openNavigation(hotel.address)" class="text-blue-600 font-black text-xs underline">開啟 Google 地圖導航</button>
+                            <div class="bg-amber-50 p-4 rounded-2xl text-amber-900 border border-amber-100 leading-relaxed">{{ hotel.notes }}</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
 
-        <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-zinc-200 flex justify-around py-4 pb-10 z-50">
+        <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-zinc-200 flex justify-around py-4 pb-10 z-50 shadow-2xl">
             <button v-for="tab in tabs" @click="currentTab = tab.id" :class="['flex flex-col items-center gap-1 transition-all', currentTab === tab.id ? 'text-black scale-110' : 'text-zinc-300']">
                 <i :data-lucide="tab.icon" class="w-6 h-6"></i>
                 <span class="text-[10px] font-black uppercase tracking-widest">{{ tab.label }}</span>
@@ -181,14 +202,16 @@
     <script>
         const { createApp, ref, onMounted, watch, computed } = Vue;
 
-        createApp({
+        const app = createApp({
             setup() {
                 const currentTab = ref('itinerary');
                 const infoSubTab = ref('flight');
                 const selectedDayIndex = ref(0);
                 const activeFlightIndex = ref(0);
+                const activeTicketIndex = ref(0);
                 const activePersonId = ref('p1');
                 const selectedCardId = ref(null);
+                const qrBase = "https://res.cloudinary.com/dpaxzwizz/image/upload/v1766390992/trip-qr";
 
                 const tabs = [
                     { id: 'itinerary', label: '行程', icon: 'map-pin' },
@@ -203,26 +226,22 @@
                 ];
 
                 const hotels = [
-                    { id: 'h1', name: 'Modern House View', location: '特羅姆瑟', secondary: '1/23 - 1/29 (6晚)', locationLabel: '特羅姆瑟 · 1/23-1/29', code: 'Booking: 5533006813', address: 'Balsfjordgata 41B, Tromsø, Norway', phone: '+47 4119 9112', notes: '已全額付款，不用鑰匙，以密碼進入。' },
-                    { id: 'h2', name: 'Thon Hotel Lofoten', location: '斯沃爾韋爾', secondary: '1/29 - 2/3 (5晚)', locationLabel: '斯沃爾韋爾 · 1/29–2/3', code: 'Ref: 424027497', address: 'Torget, Svolvær, Norway', phone: '+47 7604 9000', notes: '已付訂金NOK 7,040，餘款NOK 24,944現場付。' },
-                    { id: 'h3', name: 'Citybox Bergen City', location: '卑爾根', secondary: '2/3 - 2/5 (2晚)', locationLabel: '卑爾根 · 2/3–2/5', code: 'Ref: 285043', address: 'Nygårdsgaten 31, Bergen, Norway', phone: '+47 5531 2500', notes: '已全額付款。' },
-                    { id: 'h4', name: 'Conscious Hotel Museum Square', location: '阿姆斯特丹', secondary: '2/5 - 2/9 (4晚)', locationLabel: '阿姆斯特丹 · 2/5–2/9', code: 'Ref: 285043', address: 'De Lairessestraat 7, Amsterdam, Netherlands', phone: '+31 20 820 3333', notes: '已全額付款。' }
+                    { id: 'h1', name: 'Modern House View', locationLabel: '特羅姆瑟 · 1/23-1/29', code: 'Booking: 5533006813', address: 'Balsfjordgata 41B, Tromsø', phone: '+47 4119 9112', notes: '已全額付款，不用鑰匙，以密碼進入。' },
+                    { id: 'h2', name: 'Thon Hotel Lofoten', locationLabel: '斯沃爾韋爾 · 1/29–2/3', code: 'Ref: 424027497', address: 'Torget, Svolvær', phone: '+47 7604 9000', notes: '餘款NOK 24,944現場付。' },
+                    { id: 'h3', name: 'Citybox Bergen City', locationLabel: '卑爾根 · 2/3–2/5', code: 'Ref: 285043', address: 'Nygårdsgaten 31, Bergen', phone: '+47 5531 2500', notes: '已全額付款。' },
+                    { id: 'h4', name: 'Conscious Hotel Museum Square', locationLabel: '阿姆斯特丹 · 2/5–2/9', code: 'Ref: 285043', address: 'De Lairessestraat 7, Amsterdam', phone: '+31 20 820 3333', notes: '已全額付款。' }
                 ];
 
                 const travelDays = [
                     { date: '1/22', week: '四', title: '出發 / 抵達', dateLabel: 'D1 · 1/22 (四)' },
                     { date: '1/23', week: '五', title: '抵達 / 景點', dateLabel: 'D2 · 1/23 (五)' },
-                    { date: '1/24', week: '六', title: '建置中', dateLabel: 'D3 · 1/24 (六)' },
-                    { date: '1/25', week: '日', title: '建置中', dateLabel: 'D4 · 1/25 (日)' },
-                    { date: '1/26', week: '一', title: '建置中', dateLabel: 'D5 · 1/26 (一)' },
-                    { date: '1/27', week: '二', title: '建置中', dateLabel: 'D6 · 1/27 (二)' },
-                    { date: '1/28', week: '三', title: '建置中', dateLabel: 'D7 · 1/28 (三)' },
                     { date: '1/29', week: '四', title: '移動日', dateLabel: 'D8 · 1/29 (四)' },
-                    { date: '1/30', week: '五', title: '建置中', dateLabel: 'D9 · 1/30 (五)' },
-                    { date: '1/31', week: '六', title: '建置中', dateLabel: 'D10 · 1/31 (六)' },
-                    { date: '2/1', week: '日', title: '建置中', dateLabel: 'D11 · 2/1 (日)' },
-                    { date: '2/2', week: '一', title: '建置中', dateLabel: 'D12 · 2/2 (一)' },
-                    { date: '2/3', week: '二', title: '移動日', dateLabel: 'D13 · 2/3 (二)' }
+                    { date: '2/3', week: '二', title: '移動日', dateLabel: 'D13 · 2/3 (二)' },
+                    { date: '2/4', week: '三', title: '挪威縮影', dateLabel: 'D14 · 2/4 (三)' },
+                    { date: '2/5', week: '四', title: '移動日', dateLabel: 'D15 · 2/5 (四)' },
+                    { date: '2/6', week: '五', title: '博物館', dateLabel: 'D16 · 2/6 (五)' },
+                    { date: '2/9', week: '一', title: '景點 / 返程', dateLabel: 'D19 · 2/9 (一)' },
+                    { date: '2/10', week: '二', title: '返程', dateLabel: 'D20 · 2/10 (二)' }
                 ];
 
                 const itineraryData = {
@@ -232,71 +251,97 @@
                     ],
                     1: [
                         { id: 201, category: '航班', name: 'LX 8318 蘇黎世 → 特羅姆瑟', time: '08:15–12:15', place: 'ZRH → TOS' },
-                        { id: 202, category: '交通', name: '40號巴士 (往住宿)', time: '13:13–13:36', place: 'Tromsø lufthavn → Bjørnøygata', direction: '40 Tromsø museum via sentrum', reminders: '每半小時一班，車程約23分鐘。\n看到 Polaria 就要下車，下一站 Bjørnøygata。' }
+                        { id: 202, category: '交通', name: '40號巴士 (接駁住宿)', time: '13:13–13:36', place: 'Airport → Bjørnøygata', direction: '40 Tromsø museum via sentrum', reminders: '看到 Polaria 就要準備下車。' }
                     ],
-                    7: [
-                        { id: 801, category: '交通', name: '33號巴士 → 40號巴士 (往機場)', time: '11:57–12:24', place: 'Bjørnøygata → Tromsø lufthavn', direction: '33 Giæverbukta via Fagereng ➔ 40 Slettaelva', reminders: '1. 先搭 33 號到 Terminal 4\n2. 走路 1 分鐘到 Terminal 3 轉 40 號。' },
-                        { id: 802, category: '航班', name: 'WF 817 特羅姆瑟 → 萊克內斯', time: '14:10–15:10', place: 'TOS → LKN' },
-                        { id: 803, category: '交通', name: '741號巴士 (長途)', time: '16:00–17:25', place: 'Leknes sentrum → Svolvær sentrum', direction: '741 Svolvær - Leknes', reminders: '約 1.5 小時。坐到終點站下車。' }
+                    2: [
+                        { id: 801, category: '交通', name: '33號巴士 → 40號巴士', time: '11:57–12:24', place: '住宿 → 機場', direction: '33 Giæverbukta ➔ 40 Slettaelva', reminders: '先搭 33 到 Terminal 4，走 1 分鐘到 Terminal 3 轉 40 號。' },
+                        { id: 802, category: '航班', name: 'WF 817 特羅姆瑟 → 萊克內斯', time: '14:10–15:10', place: 'TOS → LKN' }
                     ],
-                    12: [ // D13
-                        { id: 1301, category: '交通', name: '749號巴士 → 機場', time: '06:15–06:21', place: 'Svolvær sentrum → Svolvær lufthavn', direction: '749 Fiskebøl ferjekai', reminders: '行駛時間約 5 分鐘。' },
+                    3: [
+                        { id: 1301, category: '交通', name: '749號巴士 → 機場', time: '06:15–06:21', place: 'Svolvær → 機場', direction: '749 Fiskebøl ferjekai' },
                         { id: 1302, category: '航班', name: 'WF 823 斯沃爾韋爾 → 博多', time: '09:35–10:00', place: 'SVJ → BOO' },
                         { id: 1303, category: '航班', name: 'WF 1306 博多 → 卑爾根', time: '10:40–13:30', place: 'BOO → BGO' },
-                        { id: 1304, category: '交通', name: '1號巴士 → 住宿', time: '班次密集', place: 'Bergen lufthavn → Bergen busstasjon', direction: '1 to Bergen sentrum', reminders: '可預先在 App 購票或刷卡 (NOK 49)。車程約 40 分鐘。' }
+                        { id: 1304, category: '交通', name: '1號巴士 → 住宿', time: '班次密集', place: '機場 → 市區', direction: '1 to Bergen sentrum', reminders: '可預先在 App 購票或上車刷卡 (NOK 49)。' }
+                    ],
+                    4: [
+                        { id: 1401, category: '火車', name: '卑爾根 → 米達爾', time: '08:08–10:00', place: 'Bergen ➔ Myrdal', reminders: '座位已劃：4車 29~34、37。\nReferansekode: TDT-LX3-IU6。' },
+                        { id: 1402, category: '火車', name: '米達爾 → 弗洛姆', time: '10:15–11:05', place: 'Myrdal ➔ Flåm', reminders: '對面月台轉車，坐第 6 車廂離瀑布最近。' },
+                        { id: 1403, category: '乘船', name: '納柔依峽灣遊船', time: '14:45–16:45', place: 'Flåm ➔ Gudvangen', reminders: '前 20 分鐘報到。' }
+                    ],
+                    5: [
+                        { id: 1501, category: '交通', name: '1號巴士 → 機場', time: '08:03–08:44', place: 'Bergen busstasjon ➔ 機場', direction: '1 to Bergen lufthavn' },
+                        { id: 1502, category: '航班', name: 'KL 1164 卑爾根 → 阿姆斯特丹', time: '10:50–12:35', place: 'BGO ➔ AMS', reminders: '提早 2 小時到機場，免稅店不要太晚逛。' },
+                        { id: 1503, category: '交通', name: '397號巴士 → 住宿', time: '13:27–13:52', place: '阿姆機場 ➔ Concertgebouw', direction: '397 P+R Getsewoud Zuid', reminders: '約10分鐘一班車，行駛時間約25分鐘。' }
+                    ],
+                    6: [ // D16
+                        { id: 1601, category: '活動', name: '梵谷博物館', time: '09:00–12:00', place: 'Museumplein 6', reminders: '入場 09:00，掃條碼入場。\n在樓下中庭服務台領取語音導覽設備。' }
+                    ],
+                    7: [ // D19
+                        { id: 1901, category: '航班', name: 'LX 735 阿姆斯特丹 → 蘇黎世', time: '20:00–21:30', place: 'AMS → ZRH', reminders: '提早 2.5 小時到機場，免稅店不要太晚逛。' },
+                        { id: 1902, category: '航班', name: 'LX 138 蘇黎世 → 香港', time: '22:40–17:45+1', place: 'ZRH → HKG T1', reminders: '蘇黎世機場轉機僅 1 小時 10 分鐘，注意登機時間。\n長程航班，登機前記得上廁所、帶外套。' }
+                    ],
+                    8: [ // D20
+                        { id: 2001, category: '航班', name: 'CX 464 香港 → 桃園', time: '19:40–21:20', place: 'HKG T1 → TPE T1', reminders: '轉機時間 1 小時 55 分鐘，時間充裕，但仍需注意時間。' }
                     ]
                 };
 
+                const pnr_all = { p1: 'YSOGJD', p2: 'YSOGJD', p3: 'YSK5FZ', p4: 'YSPTBQ', p5: 'YSPTBQ', p6: 'YSK5FZ', p7: 'YSK5FZ' };
+
                 const flights = [
-                    { no: 'CX 451', from: 'TPE', to: 'HKG', depTime: '19:40', arrTime: '21:55', color: 'bg-[#006564]', pnrGroup: { p1: 'YSOGJD', p2: 'YSOGJD', p3: 'YSK5FZ', p4: 'YSPTBQ', p5: 'YSPTBQ', p6: 'YSK5FZ', p7: 'YSK5FZ' } },
-                    { no: 'LX 139', from: 'HKG', to: 'ZRH', depTime: '23:30', arrTime: '06:10', color: 'bg-[#e30613]', pnrGroup: { p1: 'YSOGJD', p2: 'YSOGJD', p3: 'YSK5FZ', p4: 'YSPTBQ', p5: 'YSPTBQ', p6: 'YSK5FZ', p7: 'YSK5FZ' } },
-                    { no: 'LX 8318', from: 'ZRH', to: 'TOS', depTime: '08:15', arrTime: '12:15', color: 'bg-[#e30613]', pnrGroup: { p1: 'YSOGJD', p2: 'YSOGJD', p3: 'YSK5FZ', p4: 'YSPTBQ', p5: 'YSPTBQ', p6: 'YSK5FZ', p7: 'YSK5FZ' } },
+                    { no: 'CX 451', from: 'TPE', to: 'HKG', depTime: '19:40', arrTime: '21:55', color: 'bg-[#006564]', pnrGroup: pnr_all },
+                    { no: 'LX 139', from: 'HKG', to: 'ZRH', depTime: '23:30', arrTime: '06:10', color: 'bg-[#e30613]', pnrGroup: pnr_all },
                     { no: 'WF 817', from: 'TOS', to: 'LKN', depTime: '14:10', arrTime: '15:10', color: 'bg-[#003d4c]', pnrGroup: { p1: 'X9Q4SM', p2: 'X9Q4SM', p3: 'X9KHZB', p4: 'XAALJP', p5: 'XAALJP', p6: 'X9KHZB', p7: 'X9KHZB' } },
                     { no: 'WF 823', from: 'SVJ', to: 'BOO', depTime: '09:35', arrTime: '10:00', color: 'bg-[#003d4c]', pnrGroup: { p1: 'X9ROLA', p2: 'X9ROLA', p3: 'X9YP5Q', p4: 'XA8QXI', p5: 'XA8QXI', p6: 'X9YP5Q', p7: 'X9YP5Q' } },
-                    { no: 'WF 1306', from: 'BOO', to: 'BGO', depTime: '10:40', arrTime: '13:30', color: 'bg-[#003d4c]', pnrGroup: { p1: 'X9ROLA', p2: 'X9ROLA', p3: 'X9YP5Q', p4: 'XA8QXI', p5: 'XA8QXI', p6: 'X9YP5Q', p7: 'X9YP5Q' } }
+                    { no: 'KL 1164', from: 'BGO', to: 'AMS', depTime: '10:50', arrTime: '12:35', color: 'bg-[#00A1DE]', pnrGroup: { p1: 'X9XWU4', p2: 'X9XWU4', p3: 'XA4TCU', p4: 'XAEP2U', p5: 'XAEP2U', p6: 'XA4TCU', p7: 'XA4TCU' } },
+                    { no: 'LX 735', from: 'AMS', to: 'ZRH', depTime: '20:00', arrTime: '21:30', color: 'bg-[#e30613]', pnrGroup: pnr_all, notes: '提早 2.5 小時到機場。' },
+                    { no: 'LX 138', from: 'ZRH', to: 'HKG', depTime: '22:40', arrTime: '17:45', color: 'bg-[#e30613]', pnrGroup: pnr_all, notes: '轉機時間緊迫 (1h 10m)。' },
+                    { no: 'CX 464', from: 'HKG', to: 'TPE', depTime: '19:40', arrTime: '21:20', color: 'bg-[#006564]', pnrGroup: pnr_all }
                 ];
 
+                const specialTickets = [
+                    { btnName: 'Bergen→Myrdal', kind: '火車票', name: 'Bergen ➔ Myrdal', icon: 'train', qrKey: 'tr1', code: 'TDT-LX3-IU6' },
+                    { btnName: '峽灣遊船', kind: '船票', name: '納柔依峽灣遊船', icon: 'ship', qrKey: 'boat1' },
+                    { btnName: '梵谷博物館', kind: '門票', name: '梵谷博物館', icon: 'ticket', qrKey: 'a1', code: 'FQV282131', notes: '入場 09:00，請至中庭領取語音導覽。' }
+                ];
+
+                const currentDayData = computed(() => travelDays[selectedDayIndex.value] || travelDays[0]);
+                const currentDayItems = computed(() => itineraryData[selectedDayIndex.value] || []);
+                const activeFlight = computed(() => flights[activeFlightIndex.value] || flights[0]);
+                const activeTicket = computed(() => specialTickets[activeTicketIndex.value] || specialTickets[0]);
+                const activePersonName = computed(() => people.find(p => p.id === activePersonId.value)?.name || '');
                 const lodgingForToday = computed(() => {
-                    const day = selectedDayIndex.value;
-                    if (day === 0) return { name: '機上過夜', address: '飛機上', locationLabel: '飛機上', id: 'in-flight' };
-                    if (day >= 1 && day <= 6) return hotels[0];
-                    if (day >= 7 && day <= 11) return hotels[1];
-                    if (day >= 12 && day <= 13) return hotels[2];
-                    if (day >= 14 && day <= 17) return hotels[3];
+                    const idx = selectedDayIndex.value;
+                    if (idx === 0 || idx === 7) return { name: '機上過夜', locationLabel: '飛機上', id: 'in-flight' };
+                    if (idx === 1) return hotels[0];
+                    if (idx === 2) return hotels[1];
+                    if (idx >= 3 && idx <= 4) return hotels[2];
+                    if (idx >= 5 && idx <= 6) return hotels[3];
                     return null;
                 });
-
-                const currentDayItems = computed(() => itineraryData[selectedDayIndex.value] || []);
-                const currentDay = computed(() => travelDays[selectedDayIndex.value]);
 
                 const handleCardClick = (item) => {
                     selectedCardId.value = item.id;
                     if (item.category === '航班') {
-                        activeFlightIndex.value = flights.findIndex(f => item.name.includes(f.no));
-                        infoSubTab.value = 'flight';
-                        currentTab.value = 'info';
+                        const fIdx = flights.findIndex(f => item.name.includes(f.no));
+                        if (fIdx !== -1) activeFlightIndex.value = fIdx;
+                        infoSubTab.value = 'flight'; currentTab.value = 'info';
+                    } else if (['火車', '乘船', '活動'].includes(item.category)) {
+                        const tIdx = specialTickets.findIndex(t => item.name.includes(t.btnName.substring(0,2)));
+                        if (tIdx !== -1) activeTicketIndex.value = tIdx;
+                        infoSubTab.value = 'ticket'; currentTab.value = 'info';
                     }
                 };
 
-                const goToHotel = (id) => {
-                    if (id === 'in-flight') return;
-                    infoSubTab.value = 'hotel';
-                    currentTab.value = 'info';
-                    setTimeout(() => {
-                        const el = document.getElementById('hotel-' + id);
-                        if (el) el.scrollIntoView({ behavior: 'smooth' });
-                    }, 100);
-                };
-
+                const goToHotel = (id) => { if (id !== 'in-flight') { infoSubTab.value = 'hotel'; currentTab.value = 'info'; } };
                 const nextDay = () => { if (selectedDayIndex.value < travelDays.length - 1) selectedDayIndex.value++; };
                 const prevDay = () => { if (selectedDayIndex.value > 0) selectedDayIndex.value--; };
                 const openNavigation = (loc) => window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(loc)}`);
-                const getCategoryIcon = (cat) => ({ '航班': 'plane', '住宿': 'hotel', '交通': 'bus' }[cat] || 'map-pin');
+                const getCategoryIcon = (cat) => ({ '航班': 'plane', '火車': 'train', '乘船': 'ship', '交通': 'bus', '活動': 'ticket' }[cat] || 'map-pin');
 
                 onMounted(() => lucide.createIcons());
-                watch([currentTab, selectedDayIndex, infoSubTab, activeFlightIndex, activePersonId], () => setTimeout(() => lucide.createIcons(), 10));
+                watch([currentTab, selectedDayIndex, infoSubTab, activePersonId, activeFlightIndex, activeTicketIndex], () => setTimeout(() => lucide.createIcons(), 50));
 
-                return { currentTab, infoSubTab, tabs, travelDays, selectedDayIndex, currentDay, currentDayItems, selectedCardId, handleCardClick, nextDay, prevDay, getCategoryIcon, flights, activeFlightIndex, people, activePersonId, hotels, openNavigation, lodgingForToday, goToHotel };
+                return { currentTab, infoSubTab, tabs, travelDays, selectedDayIndex, currentDayData, currentDayItems, selectedCardId, people, activePersonId, activeFlight, flights, activeFlightIndex, activeTicket, activeTicketIndex, specialTickets, activePersonName, hotels, lodgingForToday, qrBase, nextDay, prevDay, handleCardClick, goToHotel, getCategoryIcon, openNavigation };
             }
         }).mount('#app');
     </script>
