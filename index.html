@@ -48,8 +48,8 @@
                         </div>
                     </div>
                     <div class="flex gap-2">
-                        <button @click="prevDay" class="p-2 bg-white rounded-full border border-zinc-200"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
-                        <button @click="nextDay" class="p-2 bg-white rounded-full border border-zinc-200"><i data-lucide="chevron-right" class="w-6 h-6"></i></button>
+                        <button @click="prevDay" class="p-2 bg-white rounded-full border border-zinc-200 active:bg-zinc-100"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
+                        <button @click="nextDay" class="p-2 bg-white rounded-full border border-zinc-200 active:bg-zinc-100"><i data-lucide="chevron-right" class="w-6 h-6"></i></button>
                     </div>
                 </div>
 
@@ -82,9 +82,9 @@
                                 <p class="whitespace-pre-line">{{ item.reminders }}</p>
                             </div>
                         </div>
+                        <div v-if="['航班', '火車', '乘船', '活動'].includes(item.category)" class="absolute right-5 top-5 opacity-20"><i data-lucide="chevron-right" class="w-4 h-4"></i></div>
                     </div>
 
-                    <!-- 每日夜宿結尾卡 -->
                     <div v-if="lodgingForToday" @click="goToHotel(lodgingForToday.id)" class="relative rounded-[28px] p-5 card-shadow bg-white text-zinc-900 border border-zinc-100 active:scale-[0.97]">
                         <div class="absolute top-5 right-6 text-[10px] font-bold text-zinc-400">夜宿</div>
                         <div class="flex items-center gap-3 mb-2">
@@ -137,7 +137,6 @@
                     </div>
                 </div>
 
-                <!-- 交通與票券：圖片已置中 -->
                 <div v-if="infoSubTab === 'ticket'" class="space-y-4 px-2">
                     <div class="bg-white rounded-[32px] p-1 shadow-2xl border border-white overflow-hidden text-center">
                         <div class="bg-emerald-700 p-6 text-white rounded-t-[32px]">
@@ -151,9 +150,9 @@
                                     <div><div class="text-[10px] font-black uppercase opacity-60">{{ activeTicket.kind }}</div><h2 class="text-xl font-black mt-1">{{ activeTicket.name }}</h2></div>
                                     <i :data-lucide="activeTicket.icon" class="w-8 h-8 opacity-30"></i>
                                 </div>
-                                <div class="mt-8 pt-6 border-t border-white/20 flex justify-between items-end">
+                                <div class="mt-8 pt-6 border-t border-white/20 flex justify-between items-end text-left">
                                     <div class="font-black">{{ activePersonName }}</div>
-                                    <div class="font-mono text-lg font-black tracking-tighter">{{ activeTicket.code || 'N/A' }}</div>
+                                    <div class="text-right"><div class="text-[10px] opacity-60 font-black">編號/代碼</div><div class="font-mono text-lg font-black tracking-tighter">{{ activeTicket.code || 'N/A' }}</div></div>
                                 </div>
                             </div>
                             <div class="bg-zinc-50 p-6 rounded-[32px] border-2 border-dashed border-zinc-200 flex flex-col items-center justify-center">
@@ -186,35 +185,34 @@
             <section v-show="currentTab === 'shopping'" class="space-y-6 pt-4">
                 <div class="bg-white rounded-[32px] p-6 card-shadow border border-zinc-100">
                     <h2 class="text-xl font-black text-rose-600 mb-4 flex items-center gap-2"><i data-lucide="alert-circle"></i> 待付尾款 (尚未結清)</h2>
-                    <div class="space-y-4">
+                    <div class="space-y-4 text-left">
                         <div class="p-4 bg-rose-50 border border-rose-100 rounded-2xl">
-                            <div class="font-black text-rose-900">羅浮敦住宿尾款 (住宿2)</div>
+                            <div class="font-black text-rose-900 text-base">羅浮敦住宿尾款 (住宿2)</div>
                             <div class="text-sm text-rose-700 font-bold mt-1">需付金額: NOK 24,944 (現場付)</div>
                         </div>
                         <div class="p-4 bg-zinc-50 border border-zinc-100 rounded-2xl">
-                            <div class="font-black text-zinc-800 font-bold tracking-tight">各區巴士共同費用 (7趟/人)</div>
+                            <div class="font-black text-zinc-800 font-bold tracking-tight text-base">各區巴士共同費用 (7趟/人)</div>
                             <div class="text-xs text-zinc-400 font-bold mt-1">預計每人 NOK 350 ~ 500。</div>
                         </div>
                     </div>
                 </div>
-                <div class="py-10 text-center text-zinc-300"><i data-lucide="shopping-basket" class="w-16 h-16 mx-auto"></i><p class="mt-4 font-black">購物與伴手禮建置中...</p></div>
+                <div class="py-10 text-center text-zinc-300"><i data-lucide="shopping-basket" class="w-16 h-16 mx-auto"></i><p class="mt-4 font-black">其餘想買物品清單建置中...</p></div>
             </section>
 
-            <!-- 4. 花費頁：分開幣別且修正手機寬度 -->
+            <!-- 4. 花費頁 -->
             <section v-show="currentTab === 'expenses'" class="space-y-6 pt-4 px-1">
-                <!-- 匯率換算：手機版上下堆疊 -->
                 <div class="bg-white rounded-[32px] p-6 card-shadow border border-zinc-100">
                     <h2 class="text-lg font-black text-[#0c4a6e] mb-4 flex items-center gap-2"><i data-lucide="refresh-cw" class="w-5 h-5"></i> 快速匯率換算</h2>
                     <div class="space-y-3">
                         <div class="bg-blue-50 p-4 rounded-2xl flex flex-col gap-1">
-                            <div class="text-[10px] font-black text-blue-400 uppercase tracking-widest">挪威克朗 NOK ➔ 台幣</div>
+                            <div class="text-[10px] font-black text-blue-400 uppercase tracking-widest text-left">挪威克朗 NOK ➔ 台幣</div>
                             <div class="flex items-center gap-3">
                                 <input type="number" v-model="calcNok" class="w-2/3 bg-white rounded-xl p-2 font-black text-lg shadow-sm border-none" placeholder="金額">
                                 <div class="font-black text-blue-600">≈ ${{ (calcNok * 3.0).toFixed(0) }}</div>
                             </div>
                         </div>
                         <div class="bg-indigo-50 p-4 rounded-2xl flex flex-col gap-1">
-                            <div class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">歐元 EUR ➔ 台幣</div>
+                            <div class="text-[10px] font-black text-indigo-400 uppercase tracking-widest text-left">歐元 EUR ➔ 台幣</div>
                             <div class="flex items-center gap-3">
                                 <input type="number" v-model="calcEur" class="w-2/3 bg-white rounded-xl p-2 font-black text-lg shadow-sm border-none" placeholder="金額">
                                 <div class="font-black text-indigo-600">≈ ${{ (calcEur * 35.0).toFixed(0) }}</div>
@@ -223,9 +221,8 @@
                     </div>
                 </div>
 
-                <!-- 記帳區：NOK -->
                 <div class="bg-white rounded-[32px] p-6 card-shadow border border-blue-100">
-                    <div class="flex justify-between items-center mb-4">
+                    <div class="flex justify-between items-center mb-4 text-left">
                         <h2 class="text-lg font-black text-[#0c4a6e] flex items-center gap-2"><i data-lucide="edit-3" class="w-5 h-5"></i> 共同支出 (NOK)</h2>
                         <div class="bg-blue-600 text-white text-xs px-3 py-1 rounded-full font-black">NOK {{ totalNok.toLocaleString() }}</div>
                     </div>
@@ -233,10 +230,10 @@
                         <input v-model="newNokExp.name" type="text" placeholder="項目 (如: 超市)" class="w-full bg-zinc-50 rounded-xl p-3 text-sm font-bold border-none">
                         <div class="flex gap-2">
                             <input v-model.number="newNokExp.amount" type="number" placeholder="金額" class="w-full bg-zinc-50 rounded-xl p-3 text-sm font-bold border-none">
-                            <button @click="addExpense('nok')" class="bg-[#0c4a6e] text-white px-5 rounded-xl font-black text-sm active:scale-95">+</button>
+                            <button @click="addExpense('nok')" class="bg-[#0c4a6e] text-white px-5 rounded-xl font-black text-sm active:scale-95 transition-all shadow-md">+</button>
                         </div>
                         <div class="space-y-2 mt-2">
-                            <div v-for="(ex, i) in nokList" :key="i" class="flex justify-between text-xs font-bold text-zinc-600 bg-zinc-50 p-3 rounded-lg">
+                            <div v-for="(ex, i) in nokList" :key="i" class="flex justify-between text-xs font-bold text-zinc-600 bg-zinc-50 p-3 rounded-lg border-l-4 border-blue-400">
                                 <span>{{ ex.name }}</span>
                                 <div class="flex items-center gap-2"><span>{{ ex.amount }}</span><button @click="removeExpense('nok', i)" class="text-rose-400">×</button></div>
                             </div>
@@ -244,22 +241,21 @@
                     </div>
                 </div>
 
-                <!-- 記帳區：EUR -->
                 <div class="bg-white rounded-[32px] p-6 card-shadow border border-indigo-100">
-                    <div class="flex justify-between items-center mb-4">
+                    <div class="flex justify-between items-center mb-4 text-left">
                         <h2 class="text-lg font-black text-indigo-800 flex items-center gap-2"><i data-lucide="edit-3" class="w-5 h-5"></i> 共同支出 (EUR)</h2>
                         <div class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full font-black">€ {{ totalEur.toLocaleString() }}</div>
                     </div>
-                    <div class="space-y-3">
+                    <div class="space-y-3 text-left">
                         <input v-model="newEurExp.name" type="text" placeholder="項目 (如: 晚餐)" class="w-full bg-zinc-50 rounded-xl p-3 text-sm font-bold border-none">
-                        <div class="flex gap-2">
-                            <input v-model.number="newEurExp.amount" type="number" placeholder="金額" class="w-full bg-zinc-50 rounded-xl p-3 text-sm font-bold border-none">
-                            <button @click="addExpense('eur')" class="bg-indigo-700 text-white px-5 rounded-xl font-black text-sm active:scale-95">+</button>
+                        <div class="flex gap-2 text-left">
+                            <input v-model.number="newEurExp.amount" type="number" placeholder="金額" class="w-full bg-zinc-50 rounded-xl p-3 text-sm font-bold border-none text-left">
+                            <button @click="addExpense('eur')" class="bg-indigo-700 text-white px-5 rounded-xl font-black text-sm active:scale-95 transition-all shadow-md text-left">+</button>
                         </div>
-                        <div class="space-y-2 mt-2">
-                            <div v-for="(ex, i) in eurList" :key="i" class="flex justify-between text-xs font-bold text-zinc-600 bg-zinc-50 p-3 rounded-lg">
+                        <div class="space-y-2 mt-2 text-left">
+                            <div v-for="(ex, i) in eurList" :key="i" class="flex justify-between text-xs font-bold text-zinc-600 bg-zinc-50 p-3 rounded-lg border-l-4 border-indigo-400">
                                 <span>{{ ex.name }}</span>
-                                <div class="flex items-center gap-2"><span>€ {{ ex.amount }}</span><button @click="removeExpense('eur', i)" class="text-rose-400">×</button></div>
+                                <div class="flex items-center gap-2"><span>€ {{ ex.amount }}</span><button @click="removeExpense('eur', i)" class="text-rose-400 text-left">×</button></div>
                             </div>
                         </div>
                     </div>
@@ -289,6 +285,10 @@
                 const calcNok = ref(0);
                 const calcEur = ref(0);
                 const qrBase = "https://res.cloudinary.com/dpaxzwizz/image/upload/v1766390992/trip-qr";
+                const nokList = ref([]);
+                const eurList = ref([]);
+                const newNokExp = ref({ name: '', amount: null });
+                const newEurExp = ref({ name: '', amount: null });
 
                 const tabs = [
                     { id: 'itinerary', label: '行程', icon: 'map-pin' },
@@ -308,59 +308,60 @@
 
                 const travelDays = Array.from({length: 20}, (_, i) => {
                     const dates = ['1/22','1/23','1/24','1/25','1/26','1/27','1/28','1/29','1/30','1/31','2/1','2/2','2/3','2/4','2/5','2/6','2/7','2/8','2/9','2/10'];
-                    const titles = ['出發 / 抵達','抵達 / 景點','自由時間','自由時間','自由時間','自由時間','自由時間','移動日','自由時間','自由時間','自由時間','自由時間','移動日','挪威縮影','移動日','博物館','自由行程','自由行程','景點 / 返程','返程'];
+                    const titles = ['出發 / 抵達','抵達 / 景點','自由時間','自由時間','狗拉雪橇冒險','自由時間','自由時間','移動日','自由時間','自由時間','自由時間','自由時間','移動日','挪威縮影','移動日','博物館','自由行程','自由行程','景點 / 返程','返程'];
                     return { label: `D${i+1} · ${dates[i]}`, date: dates[i], title: titles[i], dateLabel: `D${i+1} · ${dates[i]}` };
                 });
 
                 const itineraryData = {
                     0: [{ id: 101, category: '航班', name: 'CX 451 桃園 → 香港', time: '19:40-21:45', place: 'TPE T1 → HKG T1' }, { id: 102, category: '航班', name: 'LX 139 香港 → 蘇黎世', time: '23:30-06:10+1', place: 'HKG T1 → ZRH', reminders: '帶外套、上廁所。' }],
                     1: [{ id: 201, category: '航班', name: 'LX 8318 蘇黎世 → 特羅姆瑟', time: '08:15–12:15', place: 'ZRH → TOS' }, { id: 202, category: '交通', name: '40號巴士 (接駁住宿)', time: '13:13–13:36', place: 'Airport → Bjørnøygata', direction: '40 Tromsø museum via sentrum', reminders: '看到 Polaria 準備下車。' }],
+                    4: [{ id: 501, category: '活動', name: '狗拉雪橇冒險', time: '09:30–16:30', place: 'Samuel Arnesens gate 5, Tromso', reminders: '9:15前在 Tromso Havn Prostneset 主入口大廳內集合。\n預訂編號: GYGWZA49GG6X\n電話: +47 77710100' }],
                     7: [{ id: 801, category: '交通', name: '33號巴士 → 40號巴士', time: '11:57–12:24', place: '住宿 → 機場', direction: '33 Giæverbukta ➔ 40 Slettaelva', reminders: '1. 先搭 33 到 T4\n2. 走路 1 分鐘到 T3 轉 40 號。' }, { id: 802, category: '航班', name: 'WF 817 特羅姆瑟 → 萊克內斯', time: '14:10–15:10', place: 'TOS → LKN' }, { id: 803, category: '交通', name: '741號巴士 (長途)', time: '16:00–17:25', place: 'Leknes → Svolvær', direction: '741 Svolvær - Leknes', reminders: '車程約 1.5 小時，坐到終點下車。' }],
                     12: [{ id: 1301, category: '交通', name: '749號巴士 → 機場', time: '06:15–06:21', place: 'Svolvær → 機場', direction: '749 Fiskebøl ferjekai' }, { id: 1302, category: '航班', name: 'WF 823 斯沃爾韋爾 → 博多', time: '09:35–10:00', place: 'SVJ → BOO' }, { id: 1303, category: '航班', name: 'WF 1306 博多 → 卑爾根', time: '10:40–13:30', place: 'BOO → BGO' }, { id: 1304, category: '交通', name: '1號巴士 → 住宿', time: '班次密集', place: '機場 → 市區', direction: '1 to Bergen sentrum', reminders: '可 App 購票或刷卡 (NOK 49)。' }],
-                    13: [{ id: 1401, category: '火車', name: '卑爾根 → 米達爾', time: '08:08–10:00', place: 'Bergen ➔ Myrdal', reminders: '4車 29~34、37。\nTDT-LX3-IU6。' }, { id: 1402, category: '火車', name: '米達爾 → 弗洛姆', time: '10:15–11:05', place: 'Myrdal ➔ Flåm', reminders: '非對號座，下車去對面，坐第6車離瀑布近。' }, { id: 1403, category: '乘船', name: '納柔依峽灣遊船', time: '14:45–16:45', place: 'Flåm ➔ Gudvangen', reminders: '前 20 分鐘報到。' }, { id: 1404, category: '交通', name: '950號巴士 (往沃斯)', time: '16:50–17:45', place: 'Gudvangen ➔ Voss', direction: '950 to Voss', reminders: '巴士會等船班旅客。' }],
-                    14: [{ id: 1501, category: '交通', name: '1號巴士 → 機場', time: '08:03–08:44', place: 'Bergen busstasjon ➔ 機場', direction: '1 to Bergen lufthavn', reminders: '車程 40 分鐘，刷卡 NOK 49。' }, { id: 1502, category: '航班', name: 'KL 1164 卑爾根 → 阿姆斯特丹', time: '10:50–12:35', place: 'BGO ➔ AMS', reminders: '免稅店別逛太晚。' }, { id: 1503, category: '交通', name: '397號巴士 → 住宿', time: '13:27–13:52', place: 'Airport/Plaza ➔ Concertgebouw', direction: '397 P+R Getsewoud Zuid' }],
+                    13: [{ id: 1401, category: '火車', name: '卑爾根 → 米達爾', time: '08:08–10:00', place: 'Bergen ➔ Myrdal', reminders: '座位：4車 29~34、37。\nReferansekode: TDT-LX3-IU6。' }, { id: 1402, category: '火車', name: '米達爾 → 弗洛姆', time: '10:15–11:05', place: 'Myrdal ➔ Flåm', reminders: '非對號座，下車去對面，坐第6車離瀑布近。' }, { id: 1403, category: '乘船', name: '納柔依峽灣遊船', time: '14:45–16:45', place: 'Flåm ➔ Gudvangen', reminders: '前 20 分鐘報到。' }, { id: 1404, category: '交通', name: '950號巴士 (往沃斯)', time: '16:50–17:45', place: 'Gudvangen ➔ Voss', direction: '950 to Voss', reminders: '巴士會等船班。' }],
+                    14: [{ id: 1501, category: '交通', name: '1號巴士 → 機場', time: '08:03–08:44', place: 'Bergen busstasjon ➔ 機場', direction: '1 to Bergen lufthavn' }, { id: 1502, category: '航班', name: 'KL 1164 卑爾根 → 阿姆斯特丹', time: '10:50–12:35', place: 'BGO ➔ AMS', reminders: '免稅店別逛太晚。' }, { id: 1503, category: '交通', name: '397號巴士 → 住宿', time: '13:27–13:52', place: 'Airport/Plaza ➔ Concertgebouw', direction: '397 P+R Getsewoud Zuid' }],
                     15: [{ id: 1601, category: '活動', name: '梵谷博物館', time: '09:00', place: '阿姆斯特丹', reminders: '09:00 入場，記得領取語音導覽。' }],
-                    18: [{ id: 1901, category: '航班', name: 'LX 735 阿姆斯特丹 → 蘇黎世', time: '20:00–21:30', place: 'AMS → ZRH' }, { id: 1902, category: '航班', name: 'LX 138 蘇黎世 → 香港', time: '22:40–17:45+1', place: 'ZRH → HKG T1', reminders: '轉機緊迫，注意時間！' }],
+                    18: [{ id: 1901, category: '航班', name: 'LX 735 阿姆 → 蘇黎世', time: '20:00–21:30', place: 'AMS → ZRH' }, { id: 1902, category: '航班', name: 'LX 138 蘇黎世 → 香港', time: '22:40–17:45+1', place: 'ZRH → HKG T1', reminders: '轉機緊迫，注意時間！' }],
                     19: [{ id: 2001, category: '航班', name: 'CX 464 香港 → 桃園', time: '19:40–21:20', place: 'HKG T1 → TPE T1' }]
                 };
-
-                const nokList = ref([]);
-                const eurList = ref([]);
-                const newNokExp = ref({ name: '', amount: null });
-                const newEurExp = ref({ name: '', amount: null });
-
-                const totalNok = computed(() => nokList.value.reduce((s, e) => s + (e.amount || 0), 0));
-                const totalEur = computed(() => eurList.value.reduce((s, e) => s + (e.amount || 0), 0));
-
-                const addExpense = (type) => {
-                    if(type === 'nok' && newNokExp.value.name) { nokList.value.push({...newNokExp.value}); newNokExp.value = { name: '', amount: null }; }
-                    if(type === 'eur' && newEurExp.value.name) { eurList.value.push({...newEurExp.value}); newEurExp.value = { name: '', amount: null }; }
-                };
-                const removeExpense = (type, i) => { if(type==='nok') nokList.value.splice(i,1); else eurList.value.splice(i,1); };
 
                 const pnr_all = { p1: 'YSOGJD', p2: 'YSOGJD', p3: 'YSK5FZ', p4: 'YSPTBQ', p5: 'YSPTBQ', p6: 'YSK5FZ', p7: 'YSK5FZ' };
                 const flights = [
                     { no: 'CX 451', color: 'bg-[#006564]', pnrGroup: pnr_all, from: 'TPE', to: 'HKG', depTime: '19:40', arrTime: '21:55' },
                     { no: 'LX 139', color: 'bg-[#e30613]', pnrGroup: pnr_all, from: 'HKG', to: 'ZRH', depTime: '23:30', arrTime: '06:10' },
                     { no: 'LX 8318', color: 'bg-[#e30613]', pnrGroup: pnr_all, from: 'ZRH', to: 'TOS', depTime: '08:15', arrTime: '12:15' },
-                    { no: 'WF 817', color: 'bg-[#003d4c]', pnrGroup: { p1: 'X9Q4SM', p3: 'X9KHZB', p4: 'XAALJP', p2:'X9Q4SM', p5:'XAALJP', p6:'X9KHZB', p7:'X9KHZB' }, from: 'TOS', to: 'LKN', depTime: '14:10', arrTime: '15:10' },
-                    { no: 'WF 823', color: 'bg-[#003d4c]', pnrGroup: { p1: 'X9ROLA', p3: 'X9YP5Q', p4: 'XA8QXI', p2:'X9ROLA', p5:'XA8QXI', p6:'X9YP5Q', p7:'X9YP5Q' }, from: 'SVJ', to: 'BOO', depTime: '09:35', arrTime: '10:00' },
-                    { no: 'WF 1306', color: 'bg-[#003d4c]', pnrGroup: { p1: 'X9ROLA', p3: 'X9YP5Q', p4: 'XA8QXI', p2:'X9ROLA', p5:'XA8QXI', p6:'X9YP5Q', p7:'X9YP5Q' }, from: 'BOO', to: 'BGO', depTime: '10:40', arrTime: '13:30' },
-                    { no: 'KL 1164', color: 'bg-[#00A1DE]', pnrGroup: { p1: 'X9XWU4', p3: 'XA4TCU', p4: 'XAEP2U', p2:'X9XWU4', p5:'XAEP2U', p6:'XA4TCU', p7:'XA4TCU' }, from: 'BGO', to: 'AMS', depTime: '10:50', arrTime: '12:35' },
+                    { no: 'WF 817', color: 'bg-[#003d4c]', pnrGroup: { p1: 'X9Q4SM', p2:'X9Q4SM', p3: 'X9KHZB', p4: 'XAALJP', p5: 'XAALJP', p6: 'X9KHZB', p7: 'X9KHZB' }, from: 'TOS', to: 'LKN', depTime: '14:10', arrTime: '15:10' },
+                    { no: 'WF 823', color: 'bg-[#003d4c]', pnrGroup: { p1: 'X9ROLA', p2:'X9ROLA', p3: 'X9YP5Q', p4: 'XA8QXI', p5: 'XA8QXI', p6: 'X9YP5Q', p7: 'X9YP5Q' }, from: 'SVJ', to: 'BOO', depTime: '09:35', arrTime: '10:00' },
+                    { no: 'WF 1306', color: 'bg-[#003d4c]', pnrGroup: { p1: 'X9ROLA', p2:'X9ROLA', p3: 'X9YP5Q', p4: 'XA8QXI', p5: 'XA8QXI', p6: 'X9YP5Q', p7: 'X9YP5Q' }, from: 'BOO', to: 'BGO', depTime: '10:40', arrTime: '13:30' },
+                    { no: 'KL 1164', color: 'bg-[#00A1DE]', pnrGroup: { p1: 'X9XWU4', p2:'X9XWU4', p3: 'XA4TCU', p4: 'XAEP2U', p5: 'XAEP2U', p6: 'XA4TCU', p7: 'XA4TCU' }, from: 'BGO', to: 'AMS', depTime: '10:50', arrTime: '12:35' },
                     { no: 'LX 735', color: 'bg-[#e30613]', pnrGroup: pnr_all, from: 'AMS', to: 'ZRH', depTime: '20:00', arrTime: '21:30' },
                     { no: 'LX 138', color: 'bg-[#e30613]', pnrGroup: pnr_all, from: 'ZRH', to: 'HKG', depTime: '22:40', arrTime: '17:45' },
                     { no: 'CX 464', color: 'bg-[#006564]', pnrGroup: pnr_all, from: 'HKG', to: 'TPE', depTime: '19:40', arrTime: '21:20' }
                 ];
 
                 const specialTickets = [
-                    { btnName: '卑爾根火車', kind: '火車票', name: 'Bergen ➔ Myrdal', icon: 'train', qrKey: 'tr1', code: 'TDT-LX3-IU6' },
-                    { btnName: '峽灣遊船', kind: '船票', name: '納柔依峽灣遊船', icon: 'ship', qrKey: 'boat1' },
-                    { btnName: '梵谷博物館', kind: '門票', name: '梵谷博物館', icon: 'ticket', qrKey: 'a1', code: 'FQV282131' }
+                    { btnName: '卑爾根火車', kind: '火車票', name: 'Bergen ➔ Myrdal', icon: 'train', qrKey: 'tr1', code: 'TDT-LX3-IU6', notes: '座位：4車 29~34、37' },
+                    { btnName: '峽灣遊船', kind: '船票', name: '納柔依峽灣遊船', icon: 'ship', qrKey: 'boat1', notes: '請於開船前 20 分鐘報到。' },
+                    { btnName: '狗拉雪橇', kind: '活動門票', name: '狗拉雪橇冒險', icon: 'ticket', qrKey: 'a2', code: 'GYGWZA49GG6X', notes: '9:15前在 Tromso Havn Prostneset 集合。' },
+                    { btnName: '梵谷博物館', kind: '門票', name: '梵谷博物館', icon: 'ticket', qrKey: 'a1', code: 'FQV282131', notes: '09:00 入場。' }
                 ];
 
-                const activeFlight = computed(() => flights[activeFlightIndex.value]);
-                const activeTicket = computed(() => specialTickets[activeTicketIndex.value]);
-                const activePersonName = computed(() => people.find(p => p.id === activePersonId.value).name);
+                const handleCardClick = (item) => {
+                    selectedCardId.value = item.id;
+                    if (item.category === '航班') {
+                        const idx = flights.findIndex(f => item.name.includes(f.no));
+                        if(idx!==-1) { activeFlightIndex.value=idx; infoSubTab.value='flight'; currentTab.value='info'; }
+                    } else if (['火車', '乘船', '活動'].includes(item.category)) {
+                        let target = 0;
+                        if (item.name.includes('米達爾')) target = 0;
+                        if (item.name.includes('遊船')) target = 1;
+                        if (item.name.includes('狗拉雪橇')) target = 2;
+                        if (item.name.includes('梵谷')) target = 3;
+                        activeTicketIndex.value = target;
+                        infoSubTab.value = 'ticket'; currentTab.value = 'info';
+                    }
+                };
+
                 const lodgingForToday = computed(() => {
                     const idx = selectedDayIndex.value;
                     if (idx === 0 || idx === 18) return { name: '機上過夜', locationLabel: '飛機上', id: 'in-flight' };
@@ -371,27 +372,23 @@
                     return null;
                 });
 
-                const handleCardClick = (item) => {
-                    selectedCardId.value = item.id;
-                    if (item.category === '航班') {
-                        const fIdx = flights.findIndex(f => item.name.includes(f.no));
-                        if (fIdx !== -1) { activeFlightIndex.value = fIdx; infoSubTab.value = 'flight'; currentTab.value = 'info'; }
-                    } else if (['火車', '乘船', '活動'].includes(item.category)) {
-                        let target = 0;
-                        if (item.name.includes('米達爾')) target = 0;
-                        if (item.name.includes('遊船')) target = 1;
-                        if (item.name.includes('梵谷')) target = 2;
-                        activeTicketIndex.value = target;
-                        infoSubTab.value = 'ticket'; currentTab.value = 'info';
-                    }
+                const totalNok = computed(() => nokList.value.reduce((s, e) => s + (e.amount || 0), 0));
+                const totalEur = computed(() => eurList.value.reduce((s, e) => s + (e.amount || 0), 0));
+                const addExpense = (type) => {
+                    if(type === 'nok' && newNokExp.value.name) { nokList.value.push({...newNokExp.value}); newNokExp.value = { name: '', amount: null }; }
+                    if(type === 'eur' && newEurExp.value.name) { eurList.value.push({...newEurExp.value}); newEurExp.value = { name: '', amount: null }; }
                 };
+                const removeExpense = (type, i) => { if(type==='nok') nokList.value.splice(i,1); else eurList.value.splice(i,1); };
 
+                const activeFlight = computed(() => flights[activeFlightIndex.value]);
+                const activeTicket = computed(() => specialTickets[activeTicketIndex.value]);
+                const activePersonName = computed(() => people.find(p => p.id === activePersonId.value).name);
                 const nextDay = () => { if (selectedDayIndex.value < 19) selectedDayIndex.value++; };
                 const prevDay = () => { if (selectedDayIndex.value > 0) selectedDayIndex.value--; };
                 const openNavigation = (loc) => window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(loc)}`);
                 const getCategoryIcon = (cat) => ({ '航班': 'plane', '火車': 'train', '乘船': 'ship', '交通': 'bus', '活動': 'ticket' }[cat] || 'map-pin');
                 const currentDayItems = computed(() => itineraryData[selectedDayIndex.value] || []);
-                const goToHotel = (id) => { if (id !== 'in-flight') { infoSubTab.value = 'hotel'; currentTab.value = 'info'; } };
+                const goToHotel = (id) => { if(id!=='in-flight'){ infoSubTab.value='hotel'; currentTab.value='info'; } };
 
                 onMounted(() => lucide.createIcons());
                 watch([currentTab, selectedDayIndex, infoSubTab, activePersonId, activeFlightIndex, activeTicketIndex, nokList, eurList], () => setTimeout(() => lucide.createIcons(), 50), {deep: true});
