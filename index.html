@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>挪威冬日旅程 2026</title>
+    <!-- 引入核心資源 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700;900&display=swap');
         body { font-family: 'Noto Sans TC', sans-serif; background-color: #f0f4f8; margin: 0; padding: 0; }
+        [v-cloak] { display: none !important; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .card-shadow { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
@@ -18,9 +20,9 @@
         .active-card .icon-bg { background-color: rgba(255,255,255,0.2) !important; }
         .active-card .route-badge { background-color: #ffffff; color: #000000; }
         .active-card .route-text { color: #7dd3fc; }
-        .content-up { border-top-left-radius: 32px; border-top-right-radius: 32px; background-color: #f0f4f8; position: relative; top: -30px; min-height: 80vh; }
+        .content-up { border-top-left-radius: 32px; border-top-right-radius: 32px; background-color: #f0f4f8; position: relative; top: -30px; min-height: 85vh; }
         .modal-bg { background-color: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
-        [v-cloak] { display: none !important; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
 <body>
@@ -28,6 +30,7 @@
         <header class="relative h-[250px] w-full overflow-hidden bg-zinc-800">
             <img src="./banner.jpg" class="w-full h-full object-cover" alt="Norway" onerror="this.src='https://images.unsplash.com/photo-1520106212299-d99c443e4568?auto=format&fit=crop&w=1920&q=80'">
             <div class="absolute inset-0 bg-black/10"></div>
+            <!-- 浮動分頁按鈕 -->
             <div class="absolute bottom-16 right-4 flex gap-2">
                 <button v-for="tab in tabs" :key="tab.id" @click="currentTab = tab.id"
                     :class="['p-3 rounded-full transition-all duration-300 shadow-xl backdrop-blur-md', currentTab === tab.id ? 'bg-[#0c4a6e] text-white scale-110' : 'bg-white/80 text-[#0c4a6e]']">
@@ -37,26 +40,27 @@
         </header>
 
         <main class="content-up px-4 pb-32">
-            <!-- 1. 每日行程表 -->
+            <!-- 1. 行程表 -->
             <section v-show="currentTab === 'itinerary'">
-                <div class="flex items-center justify-between mb-4 pt-4 px-1 text-left font-black">
+                <div class="flex items-center justify-between mb-4 pt-4 px-1 text-left font-black tracking-tight">
                     <div class="flex items-center gap-3">
                         <div class="bg-white p-3 rounded-2xl border border-zinc-200 shadow-sm"><i data-lucide="calendar" class="w-6 h-6 text-zinc-600"></i></div>
                         <div>
-                            <div class="text-[10px] text-zinc-400 uppercase">{{ travelDays[selectedDayIndex]?.dateLabel }}</div>
+                            <div class="text-[10px] text-zinc-400 font-black uppercase">{{ travelDays[selectedDayIndex]?.dateLabel }}</div>
                             <div class="text-xl text-zinc-800 tracking-tight">{{ travelDays[selectedDayIndex]?.title }}</div>
                         </div>
                     </div>
-                    <div class="flex gap-2 text-zinc-300">
-                        <button @click="prevDay" class="p-2 bg-white rounded-full border border-zinc-100"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
-                        <button @click="nextDay" class="p-2 bg-white rounded-full border border-zinc-100"><i data-lucide="chevron-right" class="w-6 h-6"></i></button>
+                    <div class="flex gap-2">
+                        <button @click="prevDay" class="p-2 bg-white rounded-full border border-zinc-100 active:bg-zinc-200 transition-all"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
+                        <button @click="nextDay" class="p-2 bg-white rounded-full border border-zinc-100 active:bg-zinc-200 transition-all"><i data-lucide="chevron-right" class="w-6 h-6"></i></button>
                     </div>
                 </div>
 
+                <!-- 橫向 D-Day 選單 -->
                 <div class="flex overflow-x-auto hide-scrollbar gap-2 mb-6">
                     <button v-for="(day, index) in travelDays" :key="index" @click="selectedDayIndex = index"
                          :class="['flex-shrink-0 px-4 py-2 rounded-full border text-[13px] font-black transition-all whitespace-nowrap', selectedDayIndex === index ? 'bg-black text-white border-black shadow-lg scale-105' : 'bg-white text-zinc-400 border-zinc-200']">
-                        D{{index + 1}} · {{ day.date }}
+                        {{ day.label }}
                     </button>
                 </div>
 
@@ -64,106 +68,112 @@
                     <div v-for="(item, idx) in currentDayItems" :key="item.id" @click="handleCardClick(item)"
                          :class="['relative rounded-[28px] p-5 card-shadow transition-all active:scale-[0.97] text-left border border-zinc-50', selectedCardId === item.id ? 'active-card' : 'bg-white text-zinc-900']">
                         <button @click.stop="openEditModal(item, idx)" class="absolute top-5 right-12 text-zinc-300"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
-
+                        
                         <div class="flex justify-between items-start mb-2 font-black uppercase">
                             <div class="flex items-center gap-3">
-                                <div :class="['p-2 rounded-xl icon-bg shadow-sm', selectedCardId === item.id ? 'bg-white/20' : 'bg-zinc-100']"><i :data-lucide="getCategoryIcon(item.category)" class="w-5 h-5 text-zinc-600"></i></div>
-                                <div class="text-[10px] text-zinc-400">{{ item.category }}</div>
+                                <div :class="['p-2 rounded-xl icon-bg shadow-sm', selectedCardId === item.id ? 'bg-white/20' : 'bg-zinc-100']"><i :data-lucide="getCategoryIcon(item.category)" class="w-5 h-5 text-zinc-600 font-black"></i></div>
+                                <div class="text-[10px] tracking-widest text-zinc-400">{{ item.category }}</div>
                             </div>
                             <div class="text-xs">{{ item.time }}</div>
                         </div>
 
-                        <div class="ml-12">
-                            <h3 class="text-lg font-black leading-tight">{{ item.name }}</h3>
+                        <div class="ml-12 font-black">
+                            <h3 class="text-lg leading-tight tracking-tight">{{ item.name }}</h3>
+                            <!-- 藍色路線資訊 -->
                             <div v-if="item.direction" class="mt-2 flex items-start gap-2">
-                                <span class="route-badge mt-0.5 flex-shrink-0 bg-blue-600 text-white text-[9px] px-1.5 py-0.5 rounded font-black uppercase tracking-tighter">路線</span>
+                                <span class="route-badge mt-0.5 flex-shrink-0 bg-blue-600 text-white text-[9px] px-1.5 py-0.5 rounded font-black uppercase">路線</span>
                                 <span class="route-text text-xs font-black text-blue-700 leading-snug">{{ item.direction }}</span>
                             </div>
-                            <div class="text-xs font-medium mt-1 opacity-60">{{ item.place }}</div>
+                            <div class="text-xs font-medium mt-1 opacity-60 text-zinc-500">{{ item.place }}</div>
                             
+                            <!-- 導航區域 -->
                             <div v-if="item.address" class="mt-3 p-3 bg-zinc-50/50 rounded-2xl border border-zinc-100 flex justify-between items-center">
                                 <div class="text-[10px] font-bold text-zinc-500 truncate mr-2">{{ item.address }}</div>
-                                <button @click.stop="openNavigation(item.address)" class="bg-blue-600 text-white text-[10px] px-3 py-1 rounded-full font-black shadow-sm">導航</button>
+                                <button @click.stop="openNavigation(item.address)" class="bg-blue-600 text-white text-[10px] px-3 py-1 rounded-full font-black">導航</button>
                             </div>
 
-                            <div v-if="item.reminders" class="mt-4 p-4 rounded-2xl border text-[11px] leading-relaxed font-medium transition-all" :class="selectedCardId === item.id ? 'bg-white/10 border-white/20 text-white' : 'bg-amber-50 border-amber-100 text-amber-900'">
-                                <div class="flex items-center gap-1 font-black mb-1 opacity-80 uppercase text-[9px]"><i data-lucide="info" class="w-3 h-3"></i> 長輩小叮嚀</div>
+                            <!-- 小叮嚀 (完整內容) -->
+                            <div v-if="item.reminders" class="mt-4 p-4 rounded-2xl border text-[11px] leading-relaxed font-medium transition-all shadow-sm" :class="selectedCardId === item.id ? 'bg-white/10 border-white/20 text-white' : 'bg-amber-50 border-amber-100 text-amber-900 font-bold'">
+                                <div class="flex items-center gap-1 font-black mb-1 opacity-80 uppercase tracking-widest text-[9px]"><i data-lucide="info" class="w-3 h-3"></i> 長輩小叮嚀</div>
                                 <p class="whitespace-pre-line">{{ item.reminders }}</p>
                             </div>
                         </div>
                         <div v-if="item.ticketTarget !== undefined" class="absolute right-5 top-5 opacity-20"><i data-lucide="chevron-right" class="w-4 h-4"></i></div>
                     </div>
 
+                    <!-- 每日夜宿 -->
                     <div v-if="lodgingForToday" @click="goToHotel(lodgingForToday.id)" class="relative rounded-[28px] p-5 card-shadow bg-white text-zinc-900 border border-zinc-100 active:scale-[0.97] text-left">
-                        <div class="absolute top-5 right-6 text-[10px] font-bold text-zinc-400 font-black">夜宿</div>
-                        <div class="flex items-center gap-3 mb-2 font-black uppercase">
-                            <div class="p-2 rounded-xl bg-zinc-100"><i data-lucide="hotel" class="w-5 h-5 text-zinc-600"></i></div>
+                        <div class="absolute top-5 right-6 text-[10px] font-black text-zinc-400 uppercase tracking-widest">夜宿</div>
+                        <div class="flex items-center gap-3 mb-2 font-black uppercase tracking-widest">
+                            <div class="p-2 rounded-xl bg-zinc-100 shadow-sm"><i data-lucide="hotel" class="w-5 h-5 text-zinc-600 font-black"></i></div>
                             <div class="text-[10px] text-zinc-400">住宿</div>
                         </div>
                         <div class="ml-12 font-black">
                             <h3 class="text-lg leading-tight">{{ lodgingForToday.name }}</h3>
-                            <div class="text-xs mt-1 text-zinc-500">{{ lodgingForToday.locationLabel }}</div>
+                            <div class="text-xs mt-1 text-zinc-500 font-bold italic tracking-tight">{{ lodgingForToday.locationLabel }}</div>
                         </div>
                     </div>
                 </div>
-                <button @click="openAddModal" class="fixed bottom-24 right-6 w-14 h-14 bg-[#0c4a6e] text-white rounded-full shadow-2xl flex items-center justify-center z-50 active:scale-90 transition-all shadow-blue-900/40"><i data-lucide="plus" class="w-8 h-8"></i></button>
+                <!-- 新增按鈕 -->
+                <button @click="openAddModal" class="fixed bottom-24 right-6 w-14 h-14 bg-[#0c4a6e] text-white rounded-full shadow-2xl flex items-center justify-center z-50 active:scale-90 shadow-blue-900/40 transition-all"><i data-lucide="plus" class="w-8 h-8"></i></button>
             </section>
 
             <!-- 2. 資訊頁 -->
             <section v-show="currentTab === 'info'" class="space-y-6 pt-4 px-1">
                 <div class="flex bg-zinc-200 p-1 rounded-2xl shadow-inner mx-1">
-                    <button @click="infoSubTab = 'flight'" :class="['flex-1 py-3 rounded-xl text-[10px] font-black transition-all', infoSubTab === 'flight' ? 'bg-white shadow-sm text-black' : 'text-zinc-500']">航班登機證</button>
-                    <button @click="infoSubTab = 'ticket'" :class="['flex-1 py-3 rounded-xl text-[10px] font-black transition-all', infoSubTab === 'ticket' ? 'bg-white shadow-sm text-black' : 'text-zinc-500']">交通與票券</button>
-                    <button @click="infoSubTab = 'hotel'" :class="['flex-1 py-3 rounded-xl text-[10px] font-black transition-all', infoSubTab === 'hotel' ? 'bg-white shadow-sm text-black' : 'text-zinc-500']">住宿飯店</button>
+                    <button @click="infoSubTab = 'flight'" :class="['flex-1 py-3 rounded-xl text-[10px] font-black transition-all', infoSubTab === 'flight' ? 'bg-white shadow-sm text-black font-black' : 'text-zinc-500']">航班登機證</button>
+                    <button @click="infoSubTab = 'ticket'" :class="['flex-1 py-3 rounded-xl text-[10px] font-black transition-all', infoSubTab === 'ticket' ? 'bg-white shadow-sm text-black font-black' : 'text-zinc-500']">交通與票券</button>
+                    <button @click="infoSubTab = 'hotel'" :class="['flex-1 py-3 rounded-xl text-[10px] font-black transition-all', infoSubTab === 'hotel' ? 'bg-white shadow-sm text-black font-black' : 'text-zinc-500']">住宿飯店</button>
                 </div>
                 
                 <div v-if="infoSubTab !== 'hotel'" class="flex overflow-x-auto hide-scrollbar gap-2 px-4 py-2">
-                    <button v-for="p in people" @click="activePersonId = p.id" :class="['flex-shrink-0 px-5 py-2 rounded-full text-xs font-black border transition-all', activePersonId === p.id ? 'bg-black text-white shadow-md' : 'bg-white text-zinc-400 border-zinc-200']">{{ p.name }}</button>
+                    <button v-for="p in people" :key="p.id" @click="activePersonId = p.id" :class="['flex-shrink-0 px-5 py-2 rounded-full text-xs font-black border transition-all shadow-sm', activePersonId === p.id ? 'bg-black text-white shadow-md' : 'bg-white text-zinc-400 border-zinc-200']">{{ p.name }}</button>
                 </div>
 
+                <!-- 航班 -->
                 <div v-if="infoSubTab === 'flight'" class="space-y-4 px-1">
                     <div class="bg-white rounded-[32px] p-1 shadow-2xl border border-white overflow-hidden text-center">
                         <div class="bg-[#0c4a6e] p-6 text-white rounded-t-[32px]">
                             <div class="flex overflow-x-auto hide-scrollbar gap-2">
-                                <button v-for="(f, idx) in flights" :key="f.no" @click="activeFlightIndex = idx" :class="['px-4 py-2 rounded-xl flex-shrink-0 text-[10px] font-black border transition-all', activeFlightIndex === idx ? 'bg-white text-[#0c4a6e]' : 'bg-white/10 text-white border-white/20']">{{ f.no }}</button>
+                                <button v-for="(f, idx) in flights" :key="idx" @click="activeFlightIndex = idx" :class="['px-4 py-2 rounded-xl flex-shrink-0 text-[10px] font-black border transition-all', activeFlightIndex === idx ? 'bg-white text-[#0c4a6e]' : 'bg-white/10 text-white border-white/20']">{{ f.no }}</button>
                             </div>
                         </div>
                         <div class="p-6">
-                            <div :class="['rounded-3xl p-6 text-white mb-6 shadow-xl relative overflow-hidden text-left', activeFlight.color]">
-                                <div class="text-2xl font-black italic mb-6 uppercase">{{ activeFlight.no }}</div>
+                            <div :class="['rounded-3xl p-6 text-white mb-6 shadow-xl relative overflow-hidden text-left font-black transition-all duration-500', activeFlight.color]">
+                                <div class="text-2xl font-black italic mb-6 uppercase tracking-tighter italic font-black uppercase">{{ activeFlight.no }}</div>
                                 <div class="flex justify-between items-center border-b border-white/20 pb-4 mb-4">
-                                    <div><div class="text-3xl font-black">{{ activeFlight.from }}</div><div class="text-xs">{{ activeFlight.depTime }}</div></div>
-                                    <i data-lucide="move-right" class="opacity-40"></i>
-                                    <div class="text-right"><div class="text-3xl font-black">{{ activeFlight.to }}</div><div class="text-xs">{{ activeFlight.arrTime }}</div></div>
+                                    <div><div class="text-3xl tracking-tighter">{{ activeFlight.from }}</div><div class="text-xs opacity-70">{{ activeFlight.depTime }}</div></div>
+                                    <i data-lucide="move-right" class="opacity-40 font-black"></i>
+                                    <div class="text-right"><div class="text-3xl tracking-tighter">{{ activeFlight.to }}</div><div class="text-xs opacity-70">{{ activeFlight.arrTime }}</div></div>
                                 </div>
-                                <div class="flex justify-between items-end font-black">
-                                    <div><div class="text-[10px] opacity-60">PASSENGER</div><div>{{ activePersonName }}</div></div>
-                                    <div class="text-right"><div class="text-[10px] opacity-60 uppercase">PNR</div><div class="text-xl font-mono">{{ activeFlight.pnrGroup[activePersonId] || 'N/A' }}</div></div>
+                                <div class="flex justify-between items-end">
+                                    <div><div class="text-[10px] opacity-60 font-black">PASSENGER</div><div class="text-lg leading-none font-black tracking-tight">{{ activePersonName }}</div></div>
+                                    <div class="text-right"><div class="text-[10px] opacity-60 font-black uppercase">Booking PNR</div><div class="text-xl font-mono tracking-tighter font-black">{{ activeFlight.pnrGroup[activePersonId] || 'N/A' }}</div></div>
                                 </div>
                             </div>
-                            <img :src="`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${activeFlight.no}_${activePersonId}`" class="w-40 h-40 mx-auto shadow-md rounded-2xl bg-white p-2">
+                            <img :src="`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${activeFlight.no}_${activePersonId}`" class="w-40 h-40 mx-auto shadow-md rounded-2xl bg-white p-2 border border-zinc-100">
                         </div>
                     </div>
                 </div>
 
+                <!-- 交通/活動票券 (圖片置中) -->
                 <div v-if="infoSubTab === 'ticket'" class="space-y-4 px-1 text-center">
-                    <div class="bg-white rounded-[32px] p-1 shadow-2xl border border-white overflow-hidden">
+                    <div class="bg-white rounded-[32px] p-1 shadow-2xl border border-white overflow-hidden font-black">
                         <div class="bg-emerald-700 p-6 text-white rounded-t-[32px]">
                             <div class="flex overflow-x-auto hide-scrollbar gap-2">
-                                <button v-for="(t, idx) in specialTickets" @click="activeTicketIndex = idx" :class="['px-4 py-2 rounded-xl flex-shrink-0 text-[10px] font-black border transition-all', activeTicketIndex === idx ? 'bg-white text-emerald-800' : 'bg-white/10 text-white border-white/20']">{{ t.btnName }}</button>
+                                <button v-for="(t, idx) in specialTickets" :key="idx" @click="activeTicketIndex = idx" :class="['px-4 py-2 rounded-xl flex-shrink-0 text-[10px] font-black border transition-all', activeTicketIndex === idx ? 'bg-white text-emerald-800 font-black' : 'bg-white/10 text-white border-white/20']">{{ t.btnName }}</button>
                             </div>
                         </div>
                         <div class="p-6">
-                            <div class="bg-emerald-600 rounded-3xl p-6 text-white mb-6 shadow-xl relative overflow-hidden text-left font-black">
+                            <div class="bg-emerald-600 rounded-3xl p-6 text-white mb-6 shadow-xl relative overflow-hidden text-left font-black tracking-tight">
                                 <div class="flex justify-between items-start mb-4">
-                                    <div><div class="text-[10px] font-black uppercase opacity-60">Ticket</div><h2 class="text-xl font-black mt-1">{{ activeTicket.name }}</h2></div>
-                                    <i :data-lucide="activeTicket.icon" class="w-8 h-8 opacity-30"></i>
+                                    <div><div class="text-[10px] uppercase font-black opacity-70">Ticket Info</div><h2 class="text-xl font-black mt-1 leading-tight tracking-tight italic">{{ activeTicket.name }}</h2></div>
+                                    <i :data-lucide="activeTicket.icon" class="w-8 h-8 opacity-30 font-black"></i>
                                 </div>
                                 <div class="mt-8 pt-6 border-t border-white/20 flex justify-between items-end font-mono">
-                                    <div>{{ activePersonName }}</div><div>{{ activeTicket.code || 'N/A' }}</div>
+                                    <div class="text-lg font-black tracking-tighter">{{ activePersonName }}</div><div class="font-black text-xl tracking-tighter">{{ activeTicket.code || 'N/A' }}</div>
                                 </div>
                             </div>
-                            <!-- 置中容器 -->
                             <div class="bg-zinc-50 p-6 rounded-[32px] border-2 border-dashed border-zinc-200 flex flex-col items-center justify-center">
                                 <div class="w-full bg-white p-4 rounded-2xl shadow-md flex justify-center items-center">
                                     <img v-if="activeTicket.qrKey" :src="`${qrBase}/${activeTicket.qrKey}_${activePersonId}.png`" 
@@ -176,113 +186,113 @@
                     </div>
                 </div>
 
-                <div v-if="infoSubTab === 'hotel'" class="px-2 space-y-4 text-left font-black">
+                <div v-if="infoSubTab === 'hotel'" class="px-2 space-y-4 text-left font-black tracking-tighter italic">
                     <div v-for="hotel in hotels" :key="hotel.id" :id="'hotel-' + hotel.id" class="bg-white rounded-[32px] overflow-hidden shadow-xl border border-white">
-                        <div class="bg-orange-500 p-6 text-white italic tracking-tight uppercase"><h2>{{ hotel.name }}</h2></div>
-                        <div class="p-6 space-y-4 text-sm">
-                            <div class="flex items-center gap-3 text-zinc-500"><i data-lucide="map-pin" class="w-4 h-4"></i> {{ hotel.locationLabel }}</div>
-                            <div class="flex items-center gap-3 text-zinc-500"><i data-lucide="ticket" class="w-4 h-4"></i> {{ hotel.code }}</div>
-                            <div class="flex items-start gap-3 text-zinc-800 leading-snug"><i data-lucide="navigation" class="w-4 h-4 text-blue-600 mt-1"></i> {{ hotel.address }}</div>
-                            <button @click="openNavigation(hotel.address)" class="text-blue-600 text-xs underline uppercase tracking-widest font-black">開啟 Google Maps 導航</button>
-                            <div class="bg-amber-50 p-4 rounded-2xl text-amber-900 border border-amber-100 text-[11px] font-medium leading-relaxed italic">{{ hotel.notes }}</div>
+                        <div class="bg-orange-500 p-6 text-white tracking-tight uppercase"><h2>{{ hotel.name }}</h2></div>
+                        <div class="p-6 space-y-4 text-sm font-black not-italic tracking-tighter">
+                            <div class="flex items-center gap-3 text-zinc-500 font-bold uppercase"><i data-lucide="map-pin" class="w-4 h-4 text-zinc-400"></i> {{ hotel.locationLabel }}</div>
+                            <div class="flex items-center gap-3 text-zinc-500 font-bold uppercase"><i data-lucide="ticket" class="w-4 h-4 text-zinc-400"></i> {{ hotel.code }}</div>
+                            <div class="flex items-start gap-3 text-zinc-800 leading-snug font-black tracking-tight"><i data-lucide="navigation" class="w-4 h-4 text-blue-500 mt-1 font-black"></i> {{ hotel.address }}</div>
+                            <button @click="openNavigation(hotel.address)" class="text-blue-600 text-[10px] underline font-black uppercase tracking-widest active:scale-95 transition-transform">開啟 GOOGLE MAPS 導航</button>
+                            <div class="bg-amber-50 p-4 rounded-2xl text-amber-900 border border-amber-100 text-[11px] font-bold tracking-normal italic">{{ hotel.notes }}</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 同步代碼 -->
-                <div class="p-4 flex gap-2 font-black uppercase italic text-[10px] tracking-widest">
+                <div class="p-4 flex gap-2 font-black uppercase italic tracking-widest text-[10px]">
                     <button @click="exportData" class="flex-1 bg-black text-white py-4 rounded-2xl shadow-xl flex items-center justify-center gap-2 active:scale-95"><i data-lucide="share-2" class="w-4 h-4"></i> 複製同步代碼</button>
-                    <button @click="importData" class="flex-1 bg-white text-black py-4 rounded-2xl border-2 border-black flex items-center justify-center gap-2 active:scale-95"><i data-lucide="download" class="w-4 h-4"></i> 匯入代碼</button>
+                    <button @click="importData" class="flex-1 bg-white text-black py-4 rounded-2xl border-2 border-black flex items-center justify-center gap-2 active:scale-95 shadow-sm font-black"><i data-lucide="download" class="w-4 h-4"></i> 匯入他人代碼</button>
                 </div>
             </section>
 
             <!-- 3. 清單頁 -->
-            <section v-show="currentTab === 'shopping'" class="space-y-6 pt-4 px-1 text-left font-black">
-                <div class="bg-white rounded-[32px] p-6 card-shadow border border-zinc-100">
-                    <h2 class="text-xl font-black text-rose-600 mb-4 flex items-center gap-2 italic uppercase"><i data-lucide="alert-circle"></i> 尚未支付尾款</h2>
-                    <div class="p-4 bg-rose-50 border border-rose-100 rounded-2xl">
-                        <div class="text-rose-900 text-sm italic font-black uppercase">羅浮敦住宿尾款 (住宿2)</div>
-                        <div class="text-lg font-black text-rose-700 mt-1">NOK 24,944 (現場支付)</div>
+            <section v-show="currentTab === 'shopping'" class="space-y-6 pt-4 px-1 text-left font-black tracking-tighter italic uppercase">
+                <div class="bg-white rounded-[32px] p-6 card-shadow border border-zinc-100 font-black">
+                    <h2 class="text-lg font-black text-rose-600 mb-4 flex items-center gap-2 not-italic italic"><i data-lucide="alert-circle" class="font-black"></i> 尚未支付尾款 (現場付款)</h2>
+                    <div class="p-4 bg-rose-50 border border-rose-100 rounded-2xl shadow-sm">
+                        <div class="text-rose-900 text-xs italic tracking-tighter mb-1 font-black">羅浮敦住宿尾款 (住宿2)</div>
+                        <div class="text-lg font-black text-rose-700 tracking-normal uppercase">NOK 24,944</div>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-4 px-1">
-                    <div v-for="(item, idx) in shoppingList" :key="idx" class="bg-white rounded-[24px] overflow-hidden card-shadow relative">
-                        <button @click="removeShoppingItem(idx)" class="absolute top-2 right-2 bg-black/60 text-white rounded-full p-1"><i data-lucide="x" class="w-3 h-3"></i></button>
+
+                <div class="grid grid-cols-2 gap-4 px-1 font-black italic">
+                    <div v-for="(item, idx) in shoppingList" :key="idx" class="bg-white rounded-[24px] overflow-hidden card-shadow relative border border-white">
+                        <button @click="removeShoppingItem(idx)" class="absolute top-2 right-2 bg-black/60 text-white rounded-full p-1 shadow-md"><i data-lucide="x" class="w-3 h-3 font-black"></i></button>
                         <div class="h-32 bg-zinc-100 flex items-center justify-center overflow-hidden">
-                            <img v-if="item.image" :src="item.image" class="w-full h-full object-cover">
+                            <img v-if="item.image" :src="item.image" class="w-full h-full object-cover transition-opacity duration-300">
                             <i v-else data-lucide="camera" class="text-zinc-300"></i>
                         </div>
-                        <div class="p-3 text-center text-sm text-zinc-800 tracking-tighter">{{ item.name }}</div>
+                        <div class="p-3 text-center text-[11px] text-zinc-800 tracking-tighter font-black not-italic uppercase leading-tight italic">{{ item.name }}</div>
                     </div>
                 </div>
-                <button @click="showShopModal = true" class="fixed bottom-24 right-6 w-14 h-14 bg-emerald-600 text-white rounded-full shadow-2xl flex items-center justify-center z-50 active:scale-90 transition-all shadow-emerald-900/40"><i data-lucide="plus" class="w-8 h-8"></i></button>
+                <button @click="showShopModal = true" class="fixed bottom-24 right-6 w-14 h-14 bg-emerald-600 text-white rounded-full shadow-2xl flex items-center justify-center z-50 active:scale-90 shadow-emerald-900/40 font-black"><i data-lucide="plus" class="w-8 h-8 text-white font-black"></i></button>
             </section>
 
             <!-- 4. 花費頁 -->
-            <section v-show="currentTab === 'expenses'" class="space-y-6 pt-4 px-1 text-left font-black tracking-tight uppercase italic">
-                <div class="bg-white rounded-[32px] p-6 card-shadow border border-zinc-100">
-                    <h2 class="text-lg text-[#0c4a6e] mb-4 flex items-center gap-2 not-italic font-black"><i data-lucide="refresh-cw" class="w-5 h-5"></i> 快速匯率換算機</h2>
-                    <div class="space-y-3">
-                        <div class="bg-blue-50 p-4 rounded-2xl flex flex-col gap-1">
-                            <div class="text-[10px] text-blue-400 uppercase tracking-widest font-black">NOK ➔ TWD (實時)</div>
+            <section v-show="currentTab === 'expenses'" class="space-y-6 pt-4 px-1 text-left font-black italic tracking-tight uppercase">
+                <div class="bg-white rounded-[32px] p-6 card-shadow border border-zinc-100 font-black">
+                    <h2 class="text-lg text-[#0c4a6e] mb-4 flex items-center gap-2 not-italic font-black tracking-tight"><i data-lucide="refresh-cw" class="w-5 h-5 font-black"></i> 當日實時匯率</h2>
+                    <div class="space-y-3 font-black tracking-tighter">
+                        <div class="bg-blue-50 p-4 rounded-2xl flex flex-col gap-1 shadow-inner border border-blue-100/50 italic">
+                            <div class="text-[10px] text-blue-400 tracking-widest font-black">NOK ➔ TWD (實時)</div>
                             <div class="flex items-center gap-3">
-                                <input type="number" v-model="calcNok" class="w-2/3 bg-white rounded-xl p-2 text-lg shadow-sm border-none font-black text-blue-900">
-                                <div class="text-blue-600">≈ ${{ (calcNok * rates.NOK).toFixed(0) }}</div>
+                                <input type="number" v-model="calcNok" class="w-2/3 bg-white rounded-xl p-2 text-lg shadow-sm border-none font-black text-blue-900 tracking-tighter italic">
+                                <div class="text-blue-600 text-xl tracking-tighter font-black">≈ ${{ (calcNok * rates.NOK).toFixed(0) }}</div>
                             </div>
                         </div>
-                        <div class="bg-indigo-50 p-4 rounded-2xl flex flex-col gap-1">
-                            <div class="text-[10px] text-indigo-400 uppercase tracking-widest font-black">EUR ➔ TWD (實時)</div>
-                            <div class="flex items-center gap-3">
-                                <input type="number" v-model="calcEur" class="w-2/3 bg-white rounded-xl p-2 text-lg shadow-sm border-none font-black text-indigo-900">
-                                <div class="text-indigo-600">≈ ${{ (calcEur * rates.EUR).toFixed(0) }}</div>
+                        <div class="bg-indigo-50 p-4 rounded-2xl flex flex-col gap-1 shadow-inner border border-indigo-100/50 italic uppercase">
+                            <div class="text-[10px] text-indigo-400 tracking-widest font-black uppercase">EUR ➔ TWD (實時)</div>
+                            <div class="flex items-center gap-3 font-black tracking-tighter uppercase italic">
+                                <input type="number" v-model="calcEur" class="w-2/3 bg-white rounded-xl p-2 text-lg shadow-sm border-none font-black text-indigo-900 tracking-tighter italic">
+                                <div class="text-indigo-600 text-xl tracking-tighter font-black uppercase">≈ ${{ (calcEur * rates.EUR).toFixed(0) }}</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-[32px] p-6 card-shadow border border-blue-100">
-                    <div class="flex justify-between items-center mb-4 text-[#0c4a6e]"><h2 class="flex items-center gap-2 not-italic font-black"><i data-lucide="edit-3"></i> 支出 (NOK)</h2><div class="bg-blue-600 text-white text-xs px-3 py-1 rounded-full font-black not-italic tracking-widest uppercase">NOK {{ totalNok.toLocaleString() }}</div></div>
-                    <div class="space-y-3">
-                        <input v-model="newNokExp.name" type="text" placeholder="項目" class="w-full bg-zinc-50 rounded-xl p-3 text-sm border-none font-black">
-                        <div class="flex gap-2"><input v-model.number="newNokExp.amount" type="number" placeholder="金額" class="w-full bg-zinc-50 rounded-xl p-3 text-sm border-none font-black"><button @click="addExpense('nok')" class="bg-blue-600 text-white px-5 rounded-xl font-black shadow-lg">+</button></div>
-                        <div v-for="(ex, i) in nokList" :key="i" class="flex justify-between text-xs bg-zinc-50 p-3 rounded-lg border-l-4 border-blue-400 font-black not-italic"><span>{{ ex.name }}</span><div class="flex items-center gap-2"><span>{{ ex.amount }}</span><button @click="removeExpense('nok', i)" class="text-rose-400 font-black">×</button></div></div>
+                    <div class="flex justify-between items-center mb-4 text-[#0c4a6e] font-black tracking-tighter"><h2 class="flex items-center gap-2 not-italic italic uppercase font-black tracking-tight"><i data-lucide="edit-3"></i> 支出 (NOK)</h2><div class="bg-blue-600 text-white text-xs px-3 py-1 rounded-full not-italic tracking-tighter uppercase font-black shadow-lg shadow-blue-200">NOK {{ totalNok.toLocaleString() }}</div></div>
+                    <div class="space-y-3 font-black tracking-tighter">
+                        <input v-model="newNokExp.name" type="text" placeholder="共同支出項目" class="w-full bg-zinc-50 rounded-xl p-3 text-sm border-none font-black shadow-inner tracking-tight uppercase italic">
+                        <div class="flex gap-2 font-black tracking-tighter uppercase italic"><input v-model.number="newNokExp.amount" type="number" placeholder="金額" class="w-full bg-zinc-50 rounded-xl p-3 text-sm border-none shadow-inner font-black italic tracking-tighter"><button @click="addExpense('nok')" class="bg-blue-600 text-white px-6 rounded-xl shadow-xl shadow-blue-200 active:scale-90 font-black tracking-tighter uppercase italic">+</button></div>
+                        <div v-for="(ex, i) in nokList" :key="i" class="flex justify-between text-[11px] bg-zinc-50 p-3 rounded-lg border-l-4 border-blue-400 font-black not-italic shadow-sm tracking-tight italic uppercase"><span>{{ ex.name }}</span><div class="flex items-center gap-2 font-black italic tracking-tighter uppercase italic"><span>{{ ex.amount }}</span><button @click="removeExpense('nok', i)" class="text-rose-400 font-black px-1 tracking-tighter italic">×</button></div></div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-[32px] p-6 card-shadow border border-indigo-100">
-                    <div class="flex justify-between items-center mb-4 text-indigo-800 font-black"><h2 class="flex items-center gap-2 not-italic uppercase font-black"><i data-lucide="edit-3"></i> 支出 (EUR)</h2><div class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full not-italic tracking-widest font-black uppercase">€ {{ totalEur.toLocaleString() }}</div></div>
-                    <div class="space-y-3">
-                        <input v-model="newEurExp.name" type="text" placeholder="項目" class="w-full bg-zinc-50 rounded-xl p-3 text-sm border-none font-black">
-                        <div class="flex gap-2 font-black"><input v-model.number="newEurExp.amount" type="number" placeholder="金額" class="w-full bg-zinc-50 rounded-xl p-3 text-sm border-none font-black shadow-inner"><button @click="addExpense('eur')" class="bg-indigo-700 text-white px-5 rounded-xl font-black shadow-lg">+</button></div>
-                        <div v-for="(ex, i) in eurList" :key="i" class="flex justify-between text-xs bg-zinc-50 p-3 rounded-lg border-l-4 border-indigo-400 font-black not-italic italic"><span>{{ ex.name }}</span><div class="flex items-center gap-2"><span>€ {{ ex.amount }}</span><button @click="removeExpense('eur', i)" class="text-rose-400 font-black">×</button></div></div>
+                <div class="bg-white rounded-[32px] p-6 card-shadow border border-indigo-100 font-black tracking-tighter italic uppercase">
+                    <div class="flex justify-between items-center mb-4 text-indigo-800 tracking-tighter uppercase font-black italic uppercase"><h2 class="flex items-center gap-2 not-italic font-black italic uppercase tracking-tighter italic uppercase"><i data-lucide="edit-3"></i> 支出 (EUR)</h2><div class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full not-italic tracking-widest font-black uppercase shadow-lg shadow-indigo-200 italic uppercase">€ {{ totalEur.toLocaleString() }}</div></div>
+                    <div class="space-y-3 font-black tracking-tighter italic uppercase">
+                        <input v-model="newEurExp.name" type="text" placeholder="共同支出項目" class="w-full bg-zinc-50 rounded-xl p-3 text-sm border-none shadow-inner font-black italic tracking-tighter uppercase">
+                        <div class="flex gap-2 font-black tracking-tighter uppercase italic"><input v-model.number="newEurExp.amount" type="number" placeholder="金額" class="w-full bg-zinc-50 rounded-xl p-3 text-sm border-none shadow-inner font-black tracking-tighter uppercase italic"><button @click="addExpense('eur')" class="bg-indigo-700 text-white px-6 rounded-xl shadow-xl shadow-indigo-200 active:scale-90 font-black tracking-tighter uppercase italic">+</button></div>
+                        <div v-for="(ex, i) in eurList" :key="i" class="flex justify-between text-[11px] bg-zinc-50 p-3 rounded-lg border-l-4 border-indigo-400 font-black shadow-sm not-italic italic uppercase tracking-tighter"><span>{{ ex.name }}</span><div class="flex items-center gap-2 font-black tracking-tighter uppercase italic italic"><span>€ {{ ex.amount }}</span><button @click="removeExpense('eur', i)" class="text-rose-400 font-black px-1 tracking-tighter italic uppercase font-black italic">×</button></div></div>
                     </div>
                 </div>
             </section>
         </main>
 
         <!-- Modals -->
-        <div v-if="showItModal" class="fixed inset-0 z-[100] modal-bg flex items-end sm:items-center justify-center p-4">
-            <div class="bg-white w-full max-w-lg rounded-t-[32px] sm:rounded-[32px] p-6 overflow-y-auto max-h-[80vh] text-left font-black">
-                <div class="flex justify-between items-center mb-6 font-black italic uppercase text-zinc-800 tracking-widest"><h2>{{ itModalMode === 'add' ? 'NEW ITEM' : 'EDIT ITEM' }}</h2><button @click="showItModal = false" class="p-2 bg-zinc-100 rounded-full"><i data-lucide="x" class="w-5 h-5 text-zinc-400"></i></button></div>
-                <div class="space-y-4">
-                    <div><label class="text-[10px] text-zinc-400 uppercase tracking-widest">Category</label><select v-model="itForm.category" class="w-full bg-zinc-50 p-4 rounded-2xl border-none text-sm font-black shadow-inner"><option>航班</option><option>交通</option><option>活動</option><option>乘船</option><option>火車</option><option>自由時間</option></select></div>
-                    <div><label class="text-[10px] text-zinc-400 uppercase tracking-widest">Title</label><input v-model="itForm.name" type="text" class="w-full bg-zinc-50 p-4 rounded-2xl border-none text-sm font-black shadow-inner"></div>
-                    <div class="grid grid-cols-2 gap-4"><div><label class="text-[10px] text-zinc-400 uppercase tracking-widest">Time</label><input v-model="itForm.time" type="text" class="w-full bg-zinc-50 p-4 rounded-2xl border-none text-sm font-black shadow-inner"></div><div><label class="text-[10px] text-zinc-400 uppercase tracking-widest">Place</label><input v-model="itForm.place" type="text" class="w-full bg-zinc-50 p-4 rounded-2xl border-none text-sm font-black shadow-inner"></div></div>
-                    <div><label class="text-[10px] text-zinc-400 uppercase tracking-widest">Direction / Bus No.</label><input v-model="itForm.direction" type="text" class="w-full bg-zinc-50 p-4 rounded-2xl border-none text-sm font-black shadow-inner"></div>
-                    <div><label class="text-[10px] text-zinc-400 uppercase tracking-widest">Google Map Address</label><input v-model="itForm.address" type="text" class="w-full bg-zinc-50 p-4 rounded-2xl border-none text-sm font-black shadow-inner"></div>
-                    <div><label class="text-[10px] text-zinc-400 uppercase tracking-widest">Reminder Note</label><textarea v-model="itForm.reminders" class="w-full bg-zinc-50 p-4 rounded-2xl border-none text-sm font-black h-24 shadow-inner"></textarea></div>
-                    <div class="flex gap-3 pt-4"><button @click="deleteItItem" v-if="itModalMode === 'edit'" class="flex-1 bg-rose-50 text-rose-600 font-black py-4 rounded-2xl italic tracking-tighter">DELETE</button><button @click="saveItItem" class="flex-[2] bg-black text-white font-black py-4 rounded-2xl shadow-xl uppercase italic tracking-widest">SAVE CHANGE</button></div>
+        <div v-if="showItModal" class="fixed inset-0 z-[100] modal-bg flex items-end sm:items-center justify-center p-4 transition-opacity duration-300">
+            <div class="bg-white w-full max-w-lg rounded-t-[32px] sm:rounded-[32px] p-6 overflow-y-auto max-h-[85vh] text-left font-black italic">
+                <div class="flex justify-between items-center mb-6 font-black italic uppercase text-zinc-800 tracking-tighter"><h2>{{ itModalMode === 'add' ? 'NEW EVENT' : 'EDIT EVENT' }}</h2><button @click="showItModal = false" class="p-2 bg-zinc-100 rounded-full shadow-sm active:scale-90 transition-all font-black"><i data-lucide="x" class="w-5 h-5 text-zinc-400 font-black"></i></button></div>
+                <div class="space-y-4 font-black italic uppercase tracking-tighter">
+                    <div><label class="text-[10px] text-zinc-400 uppercase tracking-widest font-black uppercase italic">Type</label><select v-model="itForm.category" class="w-full bg-zinc-50 p-4 rounded-2xl border-none text-sm font-black shadow-inner tracking-tighter italic uppercase"><option>航班</option><option>交通</option><option>活動</option><option>乘船</option><option>火車</option><option>自由時間</option></select></div>
+                    <div><label class="text-[10px] text-zinc-400 tracking-widest font-black italic uppercase tracking-widest">Title</label><input v-model="itForm.name" type="text" class="w-full bg-zinc-50 p-4 rounded-2xl border-none text-sm font-black shadow-inner tracking-tight italic uppercase"></div>
+                    <div class="grid grid-cols-2 gap-4"><div><label class="text-[10px] text-zinc-400 tracking-widest font-black uppercase italic uppercase">Time</label><input v-model="itForm.time" type="text" class="w-full bg-zinc-50 p-4 rounded-2xl border-none text-sm font-black shadow-inner tracking-tight italic uppercase"></div><div><label class="text-[10px] text-zinc-400 tracking-widest font-black uppercase italic uppercase">Place</label><input v-model="itForm.place" type="text" class="w-full bg-zinc-50 p-4 rounded-2xl border-none text-sm font-black shadow-inner tracking-tight italic uppercase"></div></div>
+                    <div><label class="text-[10px] text-zinc-400 uppercase font-black italic uppercase tracking-widest italic uppercase">Map Address</label><input v-model="itForm.address" type="text" class="w-full bg-zinc-50 p-4 rounded-2xl border-none text-sm font-black shadow-inner tracking-tighter font-bold uppercase italic uppercase"></div>
+                    <div><label class="text-[10px] text-zinc-400 uppercase font-black italic uppercase tracking-widest italic uppercase tracking-tighter uppercase italic">Bus No. / Direction</label><input v-model="itForm.direction" type="text" class="w-full bg-zinc-50 p-4 rounded-2xl border-none text-sm font-black shadow-inner tracking-tighter italic uppercase tracking-tight italic uppercase"></div>
+                    <div><label class="text-[10px] text-zinc-400 uppercase font-black italic uppercase tracking-widest italic uppercase tracking-tighter uppercase italic tracking-tighter italic uppercase">Elder Note</label><textarea v-model="itForm.reminders" class="w-full bg-zinc-50 p-4 rounded-2xl border-none text-[12px] font-black h-24 shadow-inner leading-relaxed italic uppercase tracking-tighter italic uppercase"></textarea></div>
+                    <div class="flex gap-3 pt-4 font-black italic tracking-widest italic uppercase"><button @click="deleteItItem" v-if="itModalMode === 'edit'" class="flex-1 bg-rose-50 text-rose-600 font-black py-4 rounded-2xl shadow-rose-200/20 active:scale-95 font-black italic uppercase tracking-tighter uppercase italic transition-transform">DELETE</button><button @click="saveItItem" class="flex-[2] bg-black text-white font-black py-4 rounded-2xl shadow-xl shadow-zinc-900/30 active:scale-95 transition-transform uppercase font-black italic uppercase tracking-widest italic uppercase italic tracking-widest italic uppercase">SAVE ITEM</button></div>
                 </div>
             </div>
         </div>
 
-        <div v-if="showShopModal" class="fixed inset-0 z-[100] modal-bg flex items-end sm:items-center justify-center p-4">
-            <div class="bg-white w-full max-w-lg rounded-t-[32px] sm:rounded-[32px] p-6 text-left font-black uppercase italic">
-                <div class="flex justify-between items-center mb-6 font-black text-xl italic text-zinc-800"><h2>NEW SHOPPING ITEM</h2><button @click="showShopModal = false" class="p-2 bg-zinc-100 rounded-full"><i data-lucide="x" class="w-5 h-5 text-zinc-400"></i></button></div>
-                <div class="space-y-4">
-                    <div><label class="text-[10px] text-zinc-400 tracking-widest">Item Name</label><input v-model="shopForm.name" type="text" class="w-full bg-zinc-50 p-4 rounded-2xl border-none text-sm font-black shadow-inner"></div>
-                    <div><label class="text-[10px] text-zinc-400 tracking-widest">Image Capture</label><div class="mt-2 flex items-center gap-4"><label class="cursor-pointer bg-zinc-100 p-8 rounded-2xl border-2 border-dashed border-zinc-200 flex flex-col items-center flex-1 shadow-inner"><i data-lucide="camera" class="w-8 h-8 text-zinc-400 mb-2"></i><span class="text-[10px] font-black text-zinc-400 tracking-widest uppercase italic">TAKE A PHOTO</span><input type="file" @change="handleImageUpload" class="hidden" accept="image/*"></label><img v-if="shopForm.image" :src="shopForm.image" class="w-24 h-24 object-cover rounded-2xl shadow-lg border-2 border-white"></div></div>
-                    <button @click="addShopItem" class="w-full bg-black text-white font-black py-4 rounded-2xl shadow-xl mt-4 uppercase italic tracking-widest">ADD TO LIST</button>
+        <div v-if="showShopModal" class="fixed inset-0 z-[100] modal-bg flex items-end sm:items-center justify-center p-4 transition-opacity duration-300">
+            <div class="bg-white w-full max-w-lg rounded-t-[32px] sm:rounded-[32px] p-6 text-left font-black italic tracking-widest uppercase">
+                <div class="flex justify-between items-center mb-6 font-black italic uppercase text-zinc-800 tracking-tighter italic uppercase"><h2>NEW SHOPPING ITEM</h2><button @click="showShopModal = false" class="p-2 bg-zinc-100 rounded-full shadow-sm active:scale-90 transition-all font-black italic uppercase"><i data-lucide="x" class="w-5 h-5 text-zinc-400 font-black italic uppercase font-black"></i></button></div>
+                <div class="space-y-4 font-black italic uppercase tracking-tighter italic uppercase">
+                    <div><label class="text-[10px] text-zinc-400 tracking-widest font-black italic uppercase tracking-widest uppercase italic">Name</label><input v-model="shopForm.name" type="text" class="w-full bg-zinc-50 p-4 rounded-2xl border-none text-sm font-black shadow-inner italic uppercase tracking-tighter italic uppercase"></div>
+                    <div><label class="text-[10px] text-zinc-400 tracking-widest font-black italic uppercase tracking-tighter italic uppercase font-black italic uppercase tracking-tighter italic uppercase">Photo Capture</label><div class="mt-2 flex items-center gap-4 font-black italic uppercase tracking-tighter italic uppercase italic uppercase"><label class="cursor-pointer bg-zinc-100 p-8 rounded-2xl border-2 border-dashed border-zinc-200 flex flex-col items-center flex-1 shadow-inner italic uppercase tracking-tighter italic uppercase italic uppercase"><i data-lucide="camera" class="w-8 h-8 text-zinc-400 mb-2 font-black italic uppercase tracking-tighter italic uppercase italic uppercase"></i><span class="text-[10px] font-black uppercase tracking-tighter font-black italic uppercase tracking-tighter italic uppercase italic uppercase">SNAP IT</span><input type="file" @change="handleImageUpload" class="hidden font-black italic uppercase tracking-tighter italic uppercase italic uppercase" accept="image/*"></label><img v-if="shopForm.image" :src="shopForm.image" class="w-24 h-24 object-cover rounded-2xl shadow-lg border-2 border-white transition-transform duration-300 font-black italic uppercase tracking-tighter italic uppercase italic uppercase"></div></div>
+                    <button @click="addShopItem" class="w-full bg-black text-white py-4 rounded-2xl shadow-xl shadow-zinc-900/30 mt-4 uppercase font-black tracking-widest active:scale-95 transition-transform italic uppercase tracking-tighter italic uppercase italic uppercase">ADD TO LIST</button>
                 </div>
             </div>
         </div>
@@ -314,46 +324,69 @@
                 const createBase = () => { const b = {}; for(let i=0; i<20; i++) b[i] = []; return b; };
                 const initialData = createBase();
                 initialData[0] = [{ id: 101, category: '航班', name: 'CX 451 桃園 → 香港', time: '19:40', place: 'TPE T1', ticketTarget: 0 }, { id: 102, category: '航班', name: 'LX 139 香港 → 蘇黎世', time: '23:30', place: 'HKG T1', reminders: '帶外套、上廁所。', ticketTarget: 1 }];
-                initialData[1] = [{ id: 201, category: '航班', name: 'LX 8318 蘇黎世 → 特羅姆瑟', time: '08:15', place: 'ZRH → TOS', ticketTarget: 2 }, { id: 202, category: '交通', name: '40號巴士', time: '13:13', place: 'TOS Airport', direction: '40 Tromsø museum via sentrum', reminders: '看到 Polaria 準備下車。' }];
-                initialData[4] = [{ id: 501, category: '活動', name: '狗拉雪橇冒險', time: '09:30–16:30', place: 'Samuel Arnesens gate 5, Tromso', address: 'Samuel Arnesens gate 5, 9008 Tromso, Norway', reminders: '9:15前在 Tromso Havn Prostneset 集合。\n預訂編號: GYGWZA49GG6X', ticketTarget: 4 }];
-                initialData[7] = [{ id: 801, category: '交通', name: '33號巴士 → 40號巴士', time: '11:57', place: '住宿 → 機場', direction: '33 Giæverbukta ➔ 40 Slettaelva', reminders: '1. 先搭 33 到 T4\n2. 走路 1 分鐘到 T3 轉 40 號。' }, { id: 802, category: '航班', name: 'WF 817 特羅姆瑟 → 萊克內斯', time: '14:10', place: 'TOS → LKN', ticketTarget: 3 }, { id: 803, category: '交通', name: '741號巴士', time: '16:00', place: 'Leknes → Svolvær', direction: '741 Svolvær - Leknes', reminders: '車程約 1.5 小時，坐到終點下車。' }];
-                initialData[12] = [{ id: 1301, category: '交通', name: '749號巴士 → 機場', time: '06:15', place: 'Svolvær → 機場', direction: '749 Fiskebøl ferjekai' }, { id: 1302, category: '航班', name: 'WF 823 斯沃爾韋爾 → 博多', time: '09:35', place: 'SVJ → BOO', ticketTarget: 4 }, { id: 1303, category: '航班', name: 'WF 1306 博多 → 卑爾根', time: '10:40', place: 'BOO → BGO', ticketTarget: 5 }, { id: 1304, category: '交通', name: '1號巴士', time: '班次密集', place: '機場 → 市區', direction: '1 to Bergen sentrum', reminders: '車程約 40 分鐘。' }];
-                initialData[13] = [{ id: 1401, category: '火車', name: '卑爾根 → 米達爾', time: '08:08', place: 'Bergen ➔ Myrdal', reminders: '座位：4車 29~34、37。\nRef: TDT-LX3-IU6。', ticketTarget: 0 }, { id: 1402, category: '火車', name: '米達爾 → 弗洛姆', time: '10:15', place: 'Myrdal ➔ Flåm', reminders: '下車去對面月台。', ticketTarget: 1 }, { id: 1403, category: '乘船', name: '納柔依峽灣遊船', time: '14:45', place: 'Flåm ➔ Gudvangen', reminders: '前 20 分鐘報到。', ticketTarget: 2 }, { id: 1404, category: '交通', name: '950號巴士', time: '16:50', place: 'Gudvangen ➔ Voss', direction: '950 to Voss', reminders: '巴士會等船班旅客。' }];
-                initialData[14] = [{ id: 1501, category: '交通', name: '1號巴士 → 機場', time: '08:03', place: 'Bergen busstasjon ➔ 機場', direction: '1 to Bergen lufthavn' }, { id: 1502, category: '航班', name: 'KL 1164 卑爾根 → 阿姆斯特丹', time: '10:50', place: 'BGO ➔ AMS', ticketTarget: 6 }, { id: 1503, category: '交通', name: '397號巴士 → 住宿', time: '13:27', place: '阿姆機場 ➔ 市區', direction: '397 P+R Getsewoud Zuid' }];
-                initialData[15] = [{ id: 1601, category: '活動', name: '梵谷博物館', time: '09:00', place: '阿姆斯特丹', address: 'Museumplein 6, Amsterdam', reminders: '掃碼入場，領導覽機。', ticketTarget: 3 }];
+                initialData[1] = [
+                    { id: 201, category: '航班', name: 'LX 8318 蘇黎世 → 特羅姆瑟', time: '08:15', place: 'ZRH → TOS', ticketTarget: 2 },
+                    { id: 202, category: '交通', name: '40號巴士', time: '13:13', place: 'TOS Airport', direction: '40 Tromsø museum via sentrum', reminders: '看到 Polaria 準備下車。' },
+                    { id: 203, category: '活動', name: '市區探險 (麥當勞、買證書)', time: '15:00', place: '市區', address: 'Samuel Arnesens gate 5, Tromsø', reminders: '逛紀念品店、買證書、去麥當勞買明信片。' },
+                    { id: 204, category: '活動', name: '超市補貨', time: '18:30', place: '市區超市' }
+                ];
+                initialData[2] = [
+                    { id: 301, category: '活動', name: '北極大教堂 Arctic Cathedral', time: '13:00', place: '橋對岸', address: 'Hans Nilsens vei 41, Tromsdalen', reminders: '步行或巴士過橋即達。' },
+                    { id: 302, category: '活動', name: 'Fjellheisen 纜車日落', time: '15:30', place: '山下站', address: 'Solliveien 12, Tromsdalen', reminders: '看日落黃昏景。' }
+                ];
+                initialData[3] = [{ id: 401, category: '活動', name: 'Polar Park 極地動物中心', time: '10:00', place: 'Bardu', address: 'Bonesveien 893, Bardu', reminders: '狐狸互動必須預約！' }];
+                initialData[4] = [{ id: 501, category: '活動', name: '狗拉雪橇冒險', time: '09:30–16:30', place: 'Tromso Havn', address: 'Samuel Arnesens gate 5, Tromso', reminders: '9:15前在 Prostneset 大廳集合。\nGYGWZA49GG6X', ticketTarget: 4 }];
+                initialData[7] = [
+                    { id: 801, category: '交通', name: '33號巴士 → 40號巴士', time: '11:57', place: '住宿 → 機場', direction: '33 Giæverbukta ➔ 40 Slettaelva', reminders: '搭 33 到 T4，走路 1 分鐘到 T3 轉 40 號。' },
+                    { id: 802, category: '航班', name: 'WF 817 特羅姆瑟 → 萊克內斯', time: '14:10', place: 'TOS → LKN', ticketTarget: 3 },
+                    { id: 803, category: '交通', name: '741號巴士 (長途)', time: '16:00', place: 'Leknes → Svolvær', direction: '741 Svolvær - Leknes', reminders: '1.5 小時，坐到終點站下車。' }
+                ];
+                initialData[12] = [
+                    { id: 1301, category: '交通', name: '749號巴士 → 機場', time: '06:15', place: 'Svolvær → 機場', direction: '749 Fiskebøl ferjekai' },
+                    { id: 1302, category: '航班', name: 'WF 823 斯沃爾韋爾 → 博多', time: '09:35', place: 'SVJ → BOO', ticketTarget: 4 },
+                    { id: 1303, category: '航班', name: 'WF 1306 博多 → 卑爾根', time: '10:40', place: 'BOO → BGO', ticketTarget: 5 },
+                    { id: 1304, category: '交通', name: '1號巴士 → 住宿', time: '班次密集', place: '機場 → 市區', direction: '1 to Bergen sentrum', reminders: 'App 購票或刷卡 (NOK 49)。' }
+                ];
+                initialData[13] = [
+                    { id: 1401, category: '火車', name: '卑爾根 → 米達爾', time: '08:08', place: 'Bergen ➔ Myrdal', reminders: '4車 29~34、37。\nRef: TDT-LX3-IU6。', ticketTarget: 0 },
+                    { id: 1402, category: '火車', name: '米達爾 → 弗洛姆', time: '10:15', place: 'Myrdal ➔ Flåm', reminders: '對面月台轉車。', ticketTarget: 1 },
+                    { id: 1403, category: '乘船', name: '納柔依峽灣遊船', time: '14:45', place: 'Flåm ➔ Gudvangen', reminders: '前 20 分鐘報到。', ticketTarget: 2 },
+                    { id: 1404, category: '交通', name: '950號巴士 → 沃斯', time: '16:50', place: 'Gudvangen ➔ Voss', direction: '950 to Voss', reminders: '巴士會等船班。' }
+                ];
+                initialData[14] = [{ id: 1501, category: '交通', name: '1號巴士', time: '08:03', place: '市區 ➔ 機場', direction: '1 to Bergen lufthavn' }, { id: 1502, category: '航班', name: 'KL 1164 卑爾根 → 阿姆斯特丹', time: '10:50', place: 'BGO ➔ AMS', ticketTarget: 6 }, { id: 1503, category: '交通', name: '397號巴士', time: '13:27', place: '機場 ➔ 市區', direction: '397 P+R Getsewoud Zuid' }];
+                initialData[15] = [{ id: 1601, category: '活動', name: '梵谷博物館', time: '09:00', place: '阿姆斯特丹', address: 'Museumplein 6, Amsterdam', reminders: '掃碼入場，領語音導覽。', ticketTarget: 3 }];
                 initialData[18] = [{ id: 1901, category: '航班', name: 'LX 735 阿姆 → 蘇黎世', time: '20:00', place: 'AMS → ZRH', ticketTarget: 7 }, { id: 1902, category: '航班', name: 'LX 138 蘇黎世 → 香港', time: '22:40', place: 'ZRH → HKG T1', reminders: '轉機 1h 10m!', ticketTarget: 8 }];
                 initialData[19] = [{ id: 2001, category: '航班', name: 'CX 464 香港 → 桃園', time: '19:40', place: 'HKG → TPE', ticketTarget: 9 }];
 
-                const safeLoad = (key, fb) => { try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : fb; } catch(e) { return fb; } };
-                const itineraryData = reactive(safeLoad('NORWAY_FINAL_STABLE', initialData));
-                const shoppingList = ref(safeLoad('SHOP_STABLE', []));
-                const nokList = ref(safeLoad('NOK_STABLE', []));
-                const eurList = ref(safeLoad('EUR_STABLE', []));
+                const safeLoad = (k, f) => { try { const s = localStorage.getItem(k); return s ? JSON.parse(s) : f; } catch(e) { return f; } };
+                const itineraryData = reactive(safeLoad('NORWAY_V6_FINAL', initialData));
+                const shoppingList = ref(safeLoad('SHOP_V6_FINAL', []));
+                const nokList = ref(safeLoad('NOK_V6_FINAL', []));
+                const eurList = ref(safeLoad('EUR_V6_FINAL', []));
 
                 const fetchRates = async () => { try { const r = await fetch('https://api.exchangerate-api.com/v4/latest/TWD'); const d = await r.json(); rates.NOK = (1/d.rates.NOK).toFixed(2); rates.EUR = (1/d.rates.EUR).toFixed(2); } catch(e) {} };
 
                 const travelDays = Array.from({length: 20}, (_, i) => {
                     const ds = ['1/22','1/23','1/24','1/25','1/26','1/27','1/28','1/29','1/30','1/31','2/1','2/2','2/3','2/4','2/5','2/6','2/7','2/8','2/9','2/10'];
-                    const ts = ['出發 / 抵達','抵達 / 景點','自由時間','自由時間','狗拉雪橇冒險','自由時間','自由時間','移動日','自由時間','自由時間','自由時間','自由時間','移動日','挪威縮影','移動日','博物館','自由行程','自由行程','景點 / 返程','返程'];
-                    return { label: `D${i+1} · ${ds[i]}`, dateLabel: `D${i+1} · ${ds[i]}`, title: ts[i], date: ds[i] };
+                    return { label: `D${i+1} · ${ds[i]}`, dateLabel: `D${i+1} · ${ds[i]}`, title: '行程表', date: ds[i] };
                 });
 
-                watch(itineraryData, (v) => localStorage.setItem('NORWAY_FINAL_STABLE', JSON.stringify(v)), { deep: true });
-                watch(shoppingList, (v) => localStorage.setItem('SHOP_STABLE', JSON.stringify(v)), { deep: true });
-                watch(nokList, (v) => localStorage.setItem('NOK_STABLE', JSON.stringify(v)), { deep: true });
-                watch(eurList, (v) => localStorage.setItem('EUR_STABLE', JSON.stringify(v)), { deep: true });
+                watch(itineraryData, (v) => localStorage.setItem('NORWAY_V6_FINAL', JSON.stringify(v)), { deep: true });
+                watch(shoppingList, (v) => localStorage.setItem('SHOP_V6_FINAL', JSON.stringify(v)), { deep: true });
+                watch(nokList, (v) => localStorage.setItem('NOK_V6_FINAL', JSON.stringify(v)), { deep: true });
+                watch(eurList, (v) => localStorage.setItem('EUR_V6_FINAL', JSON.stringify(v)), { deep: true });
 
                 const showItModal = ref(false); const itModalMode = ref('add'); const itEditIdx = ref(null);
                 const itForm = reactive({ category: '活動', name: '', time: '', place: '', direction: '', reminders: '', address: '' });
                 const openAddModal = () => { itModalMode.value = 'add'; Object.assign(itForm, { category: '活動', name: '', time: '', place: '', direction: '', reminders: '', address: '' }); showItModal.value = true; };
                 const openEditModal = (item, idx) => { itModalMode.value = 'edit'; itEditIdx.value = idx; Object.assign(itForm, JSON.parse(JSON.stringify(item))); showItModal.value = true; };
                 const saveItItem = () => { if (!itForm.name) return; if (itModalMode.value === 'add') { itineraryData[selectedDayIndex.value].push({ ...itForm, id: Date.now() }); } else { itineraryData[selectedDayIndex.value][itEditIdx.value] = { ...itForm }; } showItModal.value = false; };
-                const deleteItItem = () => { if (confirm('確定刪除項目？')) { itineraryData[selectedDayIndex.value].splice(itEditIdx.value, 1); showItModal.value = false; } };
+                const deleteItItem = () => { if (confirm('刪除項目？')) { itineraryData[selectedDayIndex.value].splice(itEditIdx.value, 1); showItModal.value = false; } };
 
                 const showShopModal = ref(false); const shopForm = reactive({ name: '', image: '' });
                 const handleImageUpload = (e) => { const f = e.target.files[0]; if(f) { const r = new FileReader(); r.onload = (ev) => shopForm.image = ev.target.result; r.readAsDataURL(f); } };
                 const addShopItem = () => { if(shopForm.name) { shoppingList.value.push({...shopForm}); showShopModal.value = false; shopForm.name = ''; shopForm.image = ''; } };
-                const removeShoppingItem = (i) => { if(confirm('移除此項？')) shoppingList.value.splice(i, 1); };
+                const removeShoppingItem = (i) => { if(confirm('移除？')) shoppingList.value.splice(i, 1); };
 
                 const newNokExp = ref({ name: '', amount: null }); const newEurExp = ref({ name: '', amount: null });
                 const addExpense = (t) => { if(t==='nok' && newNokExp.value.name) { nokList.value.push({...newNokExp.value}); newNokExp.value={name:'',amount:null}; } else if(newEurExp.value.name) { eurList.value.push({...newEurExp.value}); newEurExp.value={name:'',amount:null}; } };
@@ -362,56 +395,29 @@
                 const totalEur = computed(() => eurList.value.reduce((s, e) => s + (e.amount || 0), 0));
 
                 const people = [{ id: 'p1', name: '林憲良' }, { id: 'p2', name: '陳慧敏' }, { id: 'p3', name: '陳慧美' }, { id: 'p4', name: '陳志宏' }, { id: 'p5', name: '陳淑蘭' }, { id: 'p6', name: '楊謦瑜' }, { id: 'p7', name: '楊謦寧' }];
-                const flights = [
-                    { no: 'CX 451', color: 'bg-[#006564]', pnrGroup: { p1: 'YSOGJD', p2: 'YSOGJD', p3: 'YSK5FZ', p4: 'YSPTBQ', p5: 'YSPTBQ', p6: 'YSK5FZ', p7: 'YSK5FZ' }, from: 'TPE', to: 'HKG', depTime: '19:40', arrTime: '21:55' },
-                    { no: 'LX 139', color: 'bg-[#e30613]', pnrGroup: { p1: 'YSOGJD', p2: 'YSOGJD', p3: 'YSK5FZ', p4: 'YSPTBQ', p5: 'YSPTBQ', p6: 'YSK5FZ', p7: 'YSK5FZ' }, from: 'HKG', to: 'ZRH', depTime: '23:30', arrTime: '06:10' },
-                    { no: 'LX 8318', color: 'bg-[#e30613]', pnrGroup: { p1: 'YSOGJD', p2: 'YSOGJD', p3: 'YSK5FZ', p4: 'YSPTBQ', p5: 'YSPTBQ', p6: 'YSK5FZ', p7: 'YSK5FZ' }, from: 'ZRH', to: 'TOS', depTime: '08:15', arrTime: '12:15' },
-                    { no: 'WF 817', color: 'bg-[#003d4c]', pnrGroup: { p1: 'X9Q4SM', p2:'X9Q4SM', p3: 'X9KHZB', p4: 'XAALJP', p5: 'XAALJP', p6: 'X9KHZB', p7: 'X9KHZB' }, from: 'TOS', to: 'LKN', depTime: '14:10', arrTime: '15:10' },
-                    { no: 'WF 823', color: 'bg-[#003d4c]', pnrGroup: { p1: 'X9ROLA', p3: 'X9YP5Q', p4: 'XA8QXI', p2:'X9ROLA', p5:'XA8QXI', p6:'X9YP5Q', p7:'X9YP5Q' }, from: 'SVJ', to: 'BOO', depTime: '09:35', arrTime: '10:00' },
-                    { no: 'WF 1306', color: 'bg-[#003d4c]', pnrGroup: { p1: 'X9ROLA', p3: 'X9YP5Q', p4: 'XA8QXI', p2:'X9ROLA', p5:'XA8QXI', p6:'X9YP5Q', p7:'X9YP5Q' }, from: 'BOO', to: 'BGO', depTime: '10:40', arrTime: '13:30' },
-                    { no: 'KL 1164', color: 'bg-[#00A1DE]', pnrGroup: { p1: 'X9XWU4', p3: 'XA4TCU', p4: 'XAEP2U', p2:'X9XWU4', p5:'XAEP2U', p6:'XA4TCU', p7:'XA4TCU' }, from: 'BGO', to: 'AMS', depTime: '10:50', arrTime: '12:35' },
-                    { no: 'LX 735', color: 'bg-[#e30613]', pnrGroup: { p1: 'YSOGJD', p2: 'YSOGJD', p3: 'YSK5FZ', p4: 'YSPTBQ', p5: 'YSPTBQ', p6: 'YSK5FZ', p7: 'YSK5FZ' }, from: 'AMS', to: 'ZRH', depTime: '20:00', arrTime: '21:30' },
-                    { no: 'LX 138', color: 'bg-[#e30613]', pnrGroup: { p1: 'YSOGJD', p2: 'YSOGJD', p3: 'YSK5FZ', p4: 'YSPTBQ', p5: 'YSPTBQ', p6: 'YSK5FZ', p7: 'YSK5FZ' }, from: 'ZRH', to: 'HKG', depTime: '22:40', arrTime: '17:45' },
-                    { no: 'CX 464', color: 'bg-[#006564]', pnrGroup: { p1: 'YSOGJD', p2: 'YSOGJD', p3: 'YSK5FZ', p4: 'YSPTBQ', p5: 'YSPTBQ', p6: 'YSK5FZ', p7: 'YSK5FZ' }, from: 'HKG', to: 'TPE', depTime: '19:40', arrTime: '21:20' }
-                ];
+                const flights = [{ no: 'CX 451', color: 'bg-[#006564]', pnrGroup: { p1: 'YSOGJD', p2: 'YSOGJD', p3: 'YSK5FZ', p4: 'YSPTBQ', p5: 'YSPTBQ', p6: 'YSK5FZ', p7: 'YSK5FZ' }, from: 'TPE', to: 'HKG', depTime: '19:40', arrTime: '21:55' }, { no: 'LX 139', color: 'bg-[#e30613]', pnrGroup: { p1: 'YSOGJD', p2: 'YSOGJD', p3: 'YSK5FZ', p4: 'YSPTBQ', p5: 'YSPTBQ', p6: 'YSK5FZ', p7: 'YSK5FZ' }, from: 'HKG', to: 'ZRH', depTime: '23:30', arrTime: '06:10' }, { no: 'LX 8318', color: 'bg-[#e30613]', pnrGroup: { p1: 'YSOGJD', p2: 'YSOGJD', p3: 'YSK5FZ', p4: 'YSPTBQ', p5: 'YSPTBQ', p6: 'YSK5FZ', p7: 'YSK5FZ' }, from: 'ZRH', to: 'TOS', depTime: '08:15', arrTime: '12:15' }, { no: 'WF 817', color: 'bg-[#003d4c]', pnrGroup: { p1: 'X9Q4SM', p2:'X9Q4SM', p3: 'X9KHZB', p4: 'XAALJP', p5: 'XAALJP', p6: 'X9KHZB', p7: 'X9KHZB' }, from: 'TOS', to: 'LKN', depTime: '14:10', arrTime: '15:10' }, { no: 'WF 823', color: 'bg-[#003d4c]', pnrGroup: { p1: 'X9ROLA', p3: 'X9YP5Q', p4: 'XA8QXI', p2:'X9ROLA', p5:'XA8QXI', p6:'X9YP5Q', p7:'X9YP5Q' }, from: 'SVJ', to: 'BOO', depTime: '09:35', arrTime: '10:00' }, { no: 'WF 1306', color: 'bg-[#003d4c]', pnrGroup: { p1: 'X9ROLA', p3: 'X9YP5Q', p4: 'XA8QXI', p2:'X9ROLA', p5:'XA8QXI', p6:'X9YP5Q', p7:'X9YP5Q' }, from: 'BOO', to: 'BGO', depTime: '10:40', arrTime: '13:30' }, { no: 'KL 1164', color: 'bg-[#00A1DE]', pnrGroup: { p1: 'X9XWU4', p3: 'XA4TCU', p4: 'XAEP2U', p2:'X9XWU4', p5:'XAEP2U', p6:'XA4TCU', p7:'XA4TCU' }, from: 'BGO', to: 'AMS', depTime: '10:50', arrTime: '12:35' }, { no: 'LX 735', color: 'bg-[#e30613]', pnrGroup: { p1: 'YSOGJD', p2: 'YSOGJD', p3: 'YSK5FZ', p4: 'YSPTBQ', p5: 'YSPTBQ', p6: 'YSK5FZ', p7: 'YSK5FZ' }, from: 'AMS', to: 'ZRH', depTime: '20:00', arrTime: '21:30' }, { no: 'LX 138', color: 'bg-[#e30613]', pnrGroup: { p1: 'YSOGJD', p2: 'YSOGJD', p3: 'YSK5FZ', p4: 'YSPTBQ', p5: 'YSPTBQ', p6: 'YSK5FZ', p7: 'YSK5FZ' }, from: 'ZRH', to: 'HKG', depTime: '22:40', arrTime: '17:45' }, { no: 'CX 464', color: 'bg-[#006564]', pnrGroup: { p1: 'YSOGJD', p2: 'YSOGJD', p3: 'YSK5FZ', p4: 'YSPTBQ', p5: 'YSPTBQ', p6: 'YSK5FZ', p7: 'YSK5FZ' }, from: 'HKG', to: 'TPE', depTime: '19:40', arrTime: '21:20' }];
                 const specialTickets = [{ btnName: '米達爾火車', kind: '火車票', name: '卑爾根 ➔ 米達爾', icon: 'train', qrKey: 'tr1', code: 'TDT-LX3-IU6' }, { btnName: '弗洛姆火車', kind: '火車票', name: '米達爾 ➔ 弗洛姆', icon: 'train', qrKey: '', code: '自由座' }, { btnName: '峽灣遊船', kind: '船票', name: '納柔依峽灣遊船', icon: 'ship', qrKey: 'boat1' }, { btnName: '梵谷博物館', kind: '門票', name: '梵谷博物館', icon: 'ticket', qrKey: 'a1', code: 'FQV282131' }, { btnName: '狗拉雪橇', kind: '活動門票', name: '狗拉雪橇冒險', icon: 'ticket', qrKey: 'a2', code: 'GYGWZA49GG6X' }];
                 const hotels = [{ id: 'h1', name: 'Modern House View', locationLabel: '特羅姆瑟', address: 'Balsfjordgata 41B, Tromsø', notes: '不用鑰匙，以密碼進入。' }, { id: 'h2', name: 'Thon Hotel Lofoten', locationLabel: '斯沃爾韋爾', address: 'Torget, Svolvær', notes: '餘款現場付。' }, { id: 'h3', name: 'Citybox Bergen City', locationLabel: '卑爾根', address: 'Nygårdsgaten 31, Bergen', notes: '已全額付款。' }, { id: 'h4', name: 'Conscious Museum Square', locationLabel: '阿姆斯特丹', address: 'De Lairessestraat 7, Amsterdam', notes: '已全額付款。' }];
 
                 const activeFlight = computed(() => flights[activeFlightIndex.value] || flights[0]);
                 const activeTicket = computed(() => specialTickets[activeTicketIndex.value] || specialTickets[0]);
-                const activePersonName = computed(() => people.find(p => p.id === activePersonId.value)?.name || '全員');
-                
-                const handleCardClick = (item) => {
-                    selectedCardId.value = item.id;
-                    if (item.ticketTarget !== undefined) {
-                        if (item.category === '航班') { activeFlightIndex.value = item.ticketTarget; infoSubTab.value = 'flight'; } 
-                        else { activeTicketIndex.value = item.ticketTarget; infoSubTab.value = 'ticket'; }
-                        currentTab.value = 'info';
-                    }
-                };
+                const activePersonName = computed(() => people.find(p => p.id === activePersonId.value).name);
+                const currentDayItems = computed(() => itineraryData[selectedDayIndex.value] || []);
+                const lodgingForToday = computed(() => { const idx = selectedDayIndex.value; if (idx === 0 || idx === 18) return { name: '機上過夜', locationLabel: '飛機上', id: 'in-flight' }; if (idx >= 1 && idx <= 6) return hotels[0]; if (idx >= 7 && idx <= 11) return hotels[1]; if (idx >= 12 && idx <= 13) return hotels[2]; if (idx >= 14 && idx <= 17) return hotels[3]; return null; });
 
-                const lodgingForToday = computed(() => {
-                    const idx = selectedDayIndex.value;
-                    if (idx === 0 || idx === 18) return { name: '機上過夜', locationLabel: '飛機上', id: 'in-flight' };
-                    if (idx >= 1 && idx <= 6) return hotels[0];
-                    if (idx >= 7 && idx <= 11) return hotels[1];
-                    if (idx >= 12 && idx <= 13) return hotels[2];
-                    if (idx >= 14 && idx <= 17) return hotels[3];
-                    return null;
-                });
-
+                const handleCardClick = (item) => { selectedCardId.value = item.id; if (item.ticketTarget !== undefined) { if (item.category === '航班') { activeFlightIndex.value = item.ticketTarget; infoSubTab.value = 'flight'; } else { activeTicketIndex.value = item.ticketTarget; infoSubTab.value = 'ticket'; } currentTab.value = 'info'; } };
                 const goToHotel = (id) => { if(id!=='in-flight'){ infoSubTab.value='hotel'; currentTab.value='info'; } };
                 const prevDay = () => { if(selectedDayIndex.value > 0) selectedDayIndex.value--; };
                 const nextDay = () => { if(selectedDayIndex.value < 19) selectedDayIndex.value++; };
                 const openNavigation = (l) => window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(l)}`);
                 const getCategoryIcon = (cat) => ({ '航班': 'plane', '火車': 'train', '乘船': 'ship', '交通': 'bus', '活動': 'ticket' }[cat] || 'map-pin');
                 const exportData = () => { navigator.clipboard.writeText(JSON.stringify({itinerary:itineraryData, shopping:shoppingList.value, nok:nokList.value, eur:eurList.value})); alert('同步代碼已複製！'); };
-                const importData = () => { const s = prompt('請貼上同步代碼：'); if(s){ try { const d=JSON.parse(s); Object.assign(itineraryData, d.itinerary); shoppingList.value=d.shopping; nokList.value=d.nok; eurList.value=d.eur; alert('匯入成功！'); } catch(e){ alert('代碼格式錯誤'); } } };
+                const importData = () => { const s = prompt('請貼上同步代碼：'); if(s){ try { const d=JSON.parse(s); Object.assign(itineraryData, d.itinerary); shoppingList.value=d.shopping; nokList.value=d.nok; eurList.value=d.eur; alert('匯入成功！'); } catch(e){ alert('代碼有誤'); } } };
 
                 onMounted(() => { fetchRates(); lucide.createIcons(); });
                 watch([currentTab, selectedDayIndex, infoSubTab, activePersonId, activeFlightIndex, activeTicketIndex, showItModal, showShopModal, nokList, eurList], () => setTimeout(() => lucide.createIcons(), 50), {deep: true});
 
-                return { currentTab, infoSubTab, tabs, travelDays, selectedDayIndex, currentDayItems: computed(() => itineraryData[selectedDayIndex.value] || []), selectedCardId, people, activePersonId, activeFlight, flights, activeFlightIndex, activeTicket, activeTicketIndex, specialTickets, activePersonName, hotels, lodgingForToday, qrBase, nextDay, prevDay, handleCardClick, goToHotel, getCategoryIcon, openNavigation, calcNok, calcEur, rates, newNokExp, newEurExp, nokList, eurList, totalNok, totalEur, addExpense, removeExpense, showItModal, itForm, openAddModal, saveItItem, itModalMode, openEditModal, deleteItItem, showShopModal, shopForm, handleImageUpload, addShopItem, shoppingList, removeShoppingItem, exportData, importData };
+                return { currentTab, infoSubTab, tabs, travelDays, selectedDayIndex, currentDayItems, selectedCardId, people, activePersonId, activeFlight, flights, activeFlightIndex, activeTicket, activeTicketIndex, specialTickets, activePersonName, hotels, lodgingForToday, qrBase, nextDay, prevDay, handleCardClick, goToHotel, getCategoryIcon, openNavigation, calcNok, calcEur, rates, newNokExp, newEurExp, nokList, eurList, totalNok, totalEur, addExpense, removeExpense, showItModal, itForm, openAddModal, saveItItem, itModalMode, openEditModal, deleteItItem, showShopModal, shopForm, handleImageUpload, addShopItem, shoppingList, removeShoppingItem, exportData, importData };
             }
         }).mount('#app');
     </script>
