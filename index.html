@@ -171,7 +171,7 @@
                             <!-- 置中容器 -->
                             <div class="bg-zinc-50 p-6 rounded-[32px] border-2 border-dashed border-zinc-200 flex flex-col items-center justify-center font-black">
                                 <div class="w-full bg-white p-4 rounded-2xl shadow-md flex justify-center items-center">
-                                    <img v-if="activeTicket.qrKey" :src="`${qrBase}/${activeTicket.qrKey}_${activePersonId}.png`" 
+                                    <img v-if="activeTicket.qrKey" :src="`${qrBase}/${activeTicket.qrKey}_${activePersonId}.png?v=1`" 
                                          class="w-full max-w-[320px] h-auto object-contain rounded-lg mx-auto shadow-sm" 
                                          onerror="this.src='https://via.placeholder.com/300x150?text=Scan+Ticket'">
                                 </div>
@@ -327,9 +327,9 @@
 
                 const createBase = () => { const b = {}; for(let i=0; i<20; i++) b[i] = []; return b; };
                 const initialData = createBase();
-                initialData[0] = [{ id: 101, category: '航班', name: 'CX 451 桃園 → 香港', time: '19:40', place: 'TPE T1', ticketTarget: 0 }, { id: 102, category: '航班', name: 'LX 139 香港 → 蘇黎世', time: '23:30', place: 'HKG T1', reminders: '帶外套、上廁所。', ticketTarget: 1 }];
+                initialData[0] = [{ id: 101, category: '航班', name: 'CX 451 桃園 → 香港', time: '19:40~21:45', place: 'TPE T1', ticketTarget: 0 }, { id: 102, category: '航班', name: 'LX 139 香港 → 蘇黎世', time: '23:30~06:10+1', place: 'HKG T1', reminders: '帶外套、上廁所。', ticketTarget: 1 }];
                 initialData[1] = [
-                    { id: 201, category: '航班', name: 'LX 8318 蘇黎世 → 特羅姆瑟', time: '08:15', place: 'ZRH → TOS', ticketTarget: 2 },
+                    { id: 201, category: '航班', name: 'LX 8318 蘇黎世 → 特羅姆瑟', time: '08:15~12:15', place: 'ZRH → TOS', ticketTarget: 2 },
                     { id: 202, category: '交通', name: '40號巴士', time: '13:13~13:36', place: 'Tromsø lufthavn → Bjørnøygata', direction: '40 Tromsø museum via sentrum', reminders: 'NOK 48。看到 Polaria 準備下車。' },
                     { id: 203, category: '活動', name: '市區探險', time: '15:00', place: 'Tromso市區', reminders: '逛紀念品店、旅客中心買北極證書、去麥當勞買明信片。' },
                     { id: 204, category: '活動', name: '超市補貨', time: '18:30', place: '市區超市' }
@@ -341,51 +341,58 @@
                 ];
                 initialData[3] = [
 					{ id: 401, category: '交通', name: '33號巴士', time: '09:42~09:48', place: 'Bjørnøygata → Telegrafbukta', direction: '33 Giæverbukta via Fagereng', reminders: '乘車時間約6分鐘。' },
-				    { id: 402, category: '活動', name: 'Telegrafbukta海灣公園', time: '10:00', place: 'Telegrafbukta海灣公園', address: 'Strandvegen 206, Tromso, 挪威', reminders: '海灣公園景色很好，白天可看風景，晚上可看極光。' }
+				    { id: 402, category: '活動', name: 'Telegrafbukta 海灣公園', time: '10:00', place: 'Telegrafbukta海灣公園', address: 'Strandvegen 206, Tromso, 挪威', reminders: '海灣公園景色很好，白天可看風景，晚上可看極光。' }
 					];
                 initialData[4] = [{ id: 501, category: '活動', name: '狗拉雪橇冒險', time: '09:30–16:30', place: 'Tromso Havn', address: 'Samuel Arnesens gate 5, Tromso', reminders: '9:15前在 Prostneset 大廳集合。\nGYGWZA49GG6X', ticketTarget: 4 }];
 				initialData[5] = [{ id: 601, category: '活動', name: 'Tromso市區特色建築', time: '10:00', address: 'Hjalmar Johansens gate 12, 9007 Tromsø, 挪威', reminders: '水族館Polaria、海事博物館MS Polstjerna、Tromso City Library。' }];
 				initialData[6] = [
 				    { id: 701, category: '交通', name: '42號巴士', time: '9:12~9:51', place: 'Polaria → Eidkjosen', direction: '42 Eidkjosen via Giæverbukta', reminders: '先走9分鐘到Polaria，搭大約40分鐘後在Eidkjosen轉425號巴士。' },
-					{ id: 702, category: '交通', name: '425號巴士', time: '10:02~10:11', place: 'Eidkjosen → Ersfjordvegen', direction: '425 Susannajord via Ersfjord', reminders: '乘車時間約10分鐘。' },
-					{ id: 703, category: '活動', name: 'Ersfjordbotn峽灣', time: '9:00', address: 'Ersfjordvegen 55, 9107 Kvaløysletta, 挪威', reminders: '天氣好時可以來看，午餐可在旁邊的Bryggejentene AS餐廳。' },
-					{ id: 704, category: '交通', name: '425號巴士', time: '13:51~14:01', place: 'Ersfjordbotn → Eidkjosen', direction: '425 Eidkjosen', reminders: '乘車時間約10分鐘，在Eidkjosen換車。' },
-					{ id: 705, category: '交通', name: '42號巴士', time: '14:05~14:41', place: 'Eidkjosen → Polaria', direction: '42 Stakkevollan via sentrum', reminders: '乘車時間約36分鐘。' }
+					{ id: 702, category: '交通', name: '425號巴士', time: '10:02~10:11', place: 'Eidkjosen → Ersfjordvegen', direction: '425 Susannajord via Ersfjord', reminders: '車程約10分鐘。' },
+					{ id: 703, category: '活動', name: 'Ersfjordbotn 峽灣', time: '10:30', address: 'Ersfjordvegen 55, 9107 Kvaløysletta, 挪威', reminders: '天氣好時可以來看，午餐可在旁邊的Bryggejentene AS餐廳。' },
+					{ id: 704, category: '交通', name: '425號巴士', time: '13:51~14:01', place: 'Ersfjordbotn → Eidkjosen', direction: '425 Eidkjosen', reminders: '車程約10分鐘，在Eidkjosen換車。' },
+					{ id: 705, category: '交通', name: '42號巴士', time: '14:05~14:41', place: 'Eidkjosen → Polaria', direction: '42 Stakkevollan via sentrum', reminders: '車程約36分鐘。' }
 					];
                 initialData[7] = [
-                    { id: 801, category: '交通', name: '33號巴士 → 40號巴士', time: '11:57', place: '住宿 → 機場', direction: '33 Giæverbukta ➔ 40 Slettaelva', reminders: '搭 33 到 T4，走路 1 分鐘到 T3 轉 40 號。' },
-                    { id: 802, category: '航班', name: 'WF 817 特羅姆瑟 → 萊克內斯', time: '14:10', place: 'TOS → LKN', ticketTarget: 3 },
-                    { id: 803, category: '交通', name: '741號巴士 (長途)', time: '16:00', place: 'Leknes → Svolvær', direction: '741 Svolvær - Leknes', reminders: '1.5 小時，坐到終點下車。' }
+                    { id: 801, category: '交通', name: '33號巴士', time: '11:57~12:17', place: 'Bjørnøygata → Giæverbukta bussterminal 4', direction: '33 Giæverbukta via Fagereng', reminders: '到Giæverbukta bussterminal 4後，走路1分鐘到Giæverbukta bussterminal 3轉40號巴士。' },
+					{ id: 802, category: '交通', name: '40號巴士', time: '12:21~12:24', place: 'Giæverbukta bussterminal 3 → Tromsø lufthavn', direction: '40 Slettaelva', reminders: '搭一站就下車。' },
+                    { id: 803, category: '航班', name: 'WF 817 特羅姆瑟 → 萊克內斯', time: '14:10~15:10', place: 'TOS → LKN', ticketTarget: 3 },
+                    { id: 804, category: '交通', name: '741號巴士 → 市區', time: '16:01~17:25', place: 'Leknes sentrum → Svolvær sentrum (Lofotgata)', direction: '741 Svolvær sentrum via Hagvåg', reminders: '走6分鐘到Leknes sentrum，車程1.5 小時，坐到終點下車。' }
                 ];
-                initialData[8] = [{ id: 901, category: '活動', name: '南部攝影師之旅', time: '08:30–15:30', place: 'Svolvær', address: 'Svolvær Tourist Information Office', reminders: '預訂：GYGBLHXKGH83', ticketTarget: 5 }];
+                initialData[8] = [{ id: 901, category: '活動', name: '南部攝影師之旅', time: '08:30–15:30', place: 'Svolvær - Reine - Hamnøy - Sakrisøy', address: 'Svolvær Tourist Information Office', reminders: '預訂：GYGBLHXKGH83', ticketTarget: 5 }];
                 initialData[12] = [
-                    { id: 1301, category: '交通', name: '749號巴士 → 機場', time: '06:15', place: 'Svolvær → 機場', direction: '749 Fiskebøl ferjekai' },
-                    { id: 1302, category: '航班', name: 'WF 823 斯沃爾韋爾 → 博多', time: '09:35', place: 'SVJ → BOO', ticketTarget: 4 },
-                    { id: 1303, category: '航班', name: 'WF 1306 博多 → 卑爾根', time: '10:40', place: 'BOO → BGO', ticketTarget: 5 },
-                    { id: 1304, category: '交通', name: '1號巴士 → 住宿', time: '班次密集', place: '機場 → 市區', direction: '1 to Bergen sentrum', reminders: '刷卡 (NOK 49)。' }
+                    { id: 1301, category: '交通', name: '749號巴士 → 機場', time: '06:15~06:21', place: 'Svolvær sentrum (Lofotgata) → Svolvær lufthavn kryss', direction: '749 Fiskebøl ferjekai', reminders: '車程6分鐘，下車後再步行6分鐘到機場。' },
+                    { id: 1302, category: '航班', name: 'WF 823 斯沃爾韋爾 → 博多', time: '09:35~10:00', place: 'SVJ → BOO', ticketTarget: 4 },
+                    { id: 1303, category: '航班', name: 'WF 1306 博多 → 卑爾根', time: '10:40~11:50', place: 'BOO → BGO', ticketTarget: 5 },
+                    { id: 1304, category: '交通', name: '1號巴士 → 住宿', time: '班次密集', place: '機場 → 飯店', direction: '1 to Bergen sentrum', reminders: '刷卡 (NOK 49)。' },
+					{ id: 1305, category: '活動', name: '下午：布呂根 Bryggen', time: '13:00', place: 'Bryggen', reminders: '港區逛逛，也可以搭纜車看夜景。' },
                 ];
                 initialData[13] = [
-                    { id: 1401, category: '火車', name: '卑爾根 → 米達爾', time: '08:08', place: 'Bergen ➔ Myrdal', reminders: '座位：4車 29~34、37。\nRef: TDT-LX3-IU6。', ticketTarget: 0 },
-                    { id: 1402, category: '火車', name: '米達爾 → 弗洛姆', time: '10:15', place: 'Myrdal ➔ Flåm', reminders: '下車去對面月台。', ticketTarget: 1 },
-                    { id: 1403, category: '乘船', name: '納柔依峽灣遊船', time: '14:45', place: 'Flåm ➔ Gudvangen', reminders: '前 20 分鐘報到。', ticketTarget: 2 },
-                    { id: 1404, category: '交通', name: '950號巴士 → 沃斯', time: '16:50', place: 'Gudvangen ➔ Voss', direction: '950 to Voss', reminders: '巴士會等船班。' }
+                    { id: 1401, category: '火車', name: '卑爾根 → 米達爾', time: '08:08~10:00', place: 'Bergen → Myrdal', reminders: '座位：4車 29~34、37。\nRef: TDT-LX3-IU6。', ticketTarget: 0 },
+                    { id: 1402, category: '火車', name: '米達爾 → 弗洛姆', time: '10:15', place: 'Myrdal → Flåm', reminders: '下車去對面月台。', ticketTarget: 1 },
+                    { id: 1403, category: '乘船', name: '納柔依峽灣遊船', time: '14:45~16:45', place: 'Flåm → Gudvangen', reminders: '前 20 分鐘報到。', ticketTarget: 2 },
+                    { id: 1404, category: '交通', name: '950號巴士 → 沃斯', time: '16:50~17:45', place: 'Gudvangen → Voss', direction: '950 to Voss', reminders: '上車刷卡。巴士會等船班。' },
+					{ id: 1405, category: '火車', name: '沃斯 → 卑爾根', time: '18:00~19:08', place: 'Voss → Bergen', reminders: '座位：4車 29~33、35~36。\nRef: RX6-XG6-QWV。', ticketTarget: 6 }
                 ];
-                initialData[14] = [{ id: 1501, category: '交通', name: '1號巴士', time: '08:03', place: '市區 ➔ 機場', direction: '1 to Bergen lufthavn' }, { id: 1502, category: '航班', name: 'KL 1164 卑爾根 → 阿姆斯特丹', time: '10:50', place: 'BGO ➔ AMS', ticketTarget: 6 }, { id: 1503, category: '交通', name: '397號巴士', time: '13:27', place: '機場 ➔ 市區', direction: '397 P+R Getsewoud Zuid' }];
-                initialData[15] = [{ id: 1601, category: '活動', name: '梵谷博物館', time: '09:00', place: '阿姆斯特丹', address: 'Museumplein 6, Amsterdam', reminders: '掃碼入場。', ticketTarget: 3 }];
+                initialData[14] = [
+				    { id: 1501, category: '交通', name: '1號巴士', time: '08:03', place: '飯店 → 機場', direction: '1 to Bergen lufthavn' }, 
+				    { id: 1502, category: '航班', name: 'KL 1164 卑爾根 → 阿姆斯特丹', time: '10:50', place: 'BGO → AMS', ticketTarget: 6 }, 
+				    { id: 1503, category: '交通', name: '397號巴士', time: '13:27', place: '機場 → 市區', direction: '397 P+R Getsewoud Zuid' }
+				];
+                initialData[15] = [{ id: 1601, category: '活動', name: '梵谷博物館', time: '09:00', place: '阿姆斯特丹', address: 'Museumplein 6, Amsterdam', reminders: '門票已買，掃條碼入場，在樓下中庭服務台領取語音導覽設備。', ticketTarget: 3 }];
                 
                 initialData[16] = [
                     { id: 1701, category: '交通', name: '住宿→Amsterdam Zuid火車站', time: '07:33~07:41', place: 'Concertgebouw→Station Zuid Amsterdam', direction: 'Tram 5 Amstelveen Stadshart', reminders: '票價：€ 1.63' },
-                    { id: 1702, category: '交通', name: '阿姆斯特丹 → 鹿特丹', time: '08:37~09:40', place: 'Amsterdam Zuid ➔ Rotterdam Blaak', direction: '3522 to Dordrecht', reminders: '7人團票，€ 8.07' },
+                    { id: 1702, category: '交通', name: '阿姆斯特丹 → 鹿特丹', time: '08:37~09:40', place: 'Amsterdam Zuid → Rotterdam Blaak', direction: '3522 to Dordrecht', reminders: '7人團票，€ 8.07' },
                     { id: 1703, category: '活動', name: '上午：鹿特丹市區景點參觀拍照', time: '09:50', place: '鹿特丹市區', reminders: '方塊屋、聖勞倫斯大教堂、Markthal 露天市集' },
                     { id: 1704, category: '活動', name: '午餐：Markthal市場', time: '11:30', reminders: '推薦：鯡魚三明治 Broodje Haring、荷蘭薯條 Patat Friet、荷蘭煎餅 Poffertjes、卡諾里卷 Cannoli。' },
-                    { id: 1705, category: '交通', name: 'WaterShuttle ➔ 小孩堤防', time: '13:15~13:45', place: 'Willemskade', address: 'Willemskade, 3016 DM Rotterdam', direction: 'to Kinderdijk, Molenkade', reminders: '單程票€ 9.75，可以選擇買水上巴士+小孩堤防的套票€ 32.50' },
+                    { id: 1705, category: '交通', name: 'WaterShuttle → 小孩堤防', time: '13:15~13:45', place: 'Willemskade', address: 'Willemskade, 3016 DM Rotterdam', direction: 'to Kinderdijk, Molenkade', reminders: '單程票€ 9.75，可以選擇買水上巴士+小孩堤防的套票€ 32.50' },
                     { id: 1706, category: '活動', name: '下午：小孩堤防', time: '13:45', place: '小孩堤防', reminders: '風車群博物館。' },
-                    { id: 1707, category: '交通', name: 'WaterShuttle ➔ 鹿特丹', time: '16:45~17:15', place: 'Molenkade', address: 'Molenkade, 2941 EH Kinderdijk', direction: 'to Rotterdam, Erasmusbrug', reminders: '單程票€ 9.75' },
+                    { id: 1707, category: '交通', name: 'WaterShuttle → 鹿特丹', time: '16:45~17:15', place: 'Molenkade', address: 'Molenkade, 2941 EH Kinderdijk', direction: 'to Rotterdam, Erasmusbrug', reminders: '單程票€ 9.75' },
                     { id: 1708, category: '活動', name: '晚餐：鹿特丹車站附近', time: '17:30' },
                     { id: 1709, category: '交通', name: '鹿特丹 → 阿姆斯特丹', time: '18:56~19:53', place: 'Rotterdam ➔ Amsterdam Zuid', direction: '3573 to Venlo', reminders: '團票 € 8.07。下一班 19:26~20:23。' }
                 ];
 
-                initialData[18] = [{ id: 1901, category: '航班', name: 'LX 735 阿姆 → 蘇黎世', time: '20:00', place: 'AMS → ZRH', ticketTarget: 7 }, { id: 1902, category: '航班', name: 'LX 138 蘇黎世 → 香港', time: '22:40', place: 'ZRH → HKG T1', reminders: '轉機 1h 10m!', ticketTarget: 8 }];
+                initialData[18] = [{ id: 1901, category: '航班', name: 'LX 735 阿姆斯特丹 → 蘇黎世', time: '20:00', place: 'AMS → ZRH', ticketTarget: 7 }, { id: 1902, category: '航班', name: 'LX 138 蘇黎世 → 香港', time: '22:40', place: 'ZRH → HKG T1', reminders: '轉機 1h 10m!', ticketTarget: 8 }];
                 initialData[19] = [{ id: 2001, category: '航班', name: 'CX 464 香港 → 桃園', time: '19:40', place: 'HKG → TPE', ticketTarget: 9 }];
 
                 const safeLoad = (k, f) => { try { const s = localStorage.getItem(k); return s ? JSON.parse(s) : f; } catch(e) { return f; } };
@@ -438,7 +445,7 @@
                     { no: 'LX 138', color: 'bg-[#e30613]', pnrGroup: { p1: 'YSOGJD', p2: 'YSOGJD', p3: 'YSK5FZ', p4: 'YSPTBQ', p5: 'YSPTBQ', p6: 'YSK5FZ', p7: 'YSK5FZ' }, from: 'ZRH', to: 'HKG', depTime: '22:40', arrTime: '17:45' },
                     { no: 'CX 464', color: 'bg-[#006564]', pnrGroup: { p1: 'YSOGJD', p2: 'YSOGJD', p3: 'YSK5FZ', p4: 'YSPTBQ', p5: 'YSPTBQ', p6: 'YSK5FZ', p7: 'YSK5FZ' }, from: 'HKG', to: 'TPE', depTime: '19:40', arrTime: '21:20' }
                 ];
-                const specialTickets = [{ btnName: '米達爾火車', kind: '火車票', name: '卑爾根 ➔ 米達爾', icon: 'train', qrKey: 'tr1', code: 'TDT-LX3-IU6' }, { btnName: '弗洛姆火車', kind: '火車票', name: '米達爾 ➔ 弗洛姆', icon: 'train', qrKey: '', code: '自由座' }, { btnName: '峽灣遊船', kind: '船票', name: '納柔依峽灣遊船', icon: 'ship', qrKey: 'boat1' }, { btnName: '梵谷博物館', kind: '門票', name: '梵谷博物館', icon: 'ticket', qrKey: 'a1', code: 'FQV282131' }, { btnName: '狗拉雪橇', kind: '活動門票', name: '狗拉雪橇冒險', icon: 'ticket', qrKey: 'a2', code: 'GYGWZA49GG6X' }, { btnName: '夢想之旅', kind: '活動門票', name: '南部攝影師之旅', icon: 'camera', qrKey: 'a3', code: 'GYGBLHXKGH83' }];
+                const specialTickets = [{ btnName: '米達爾火車', kind: '火車票', name: '卑爾根 ➔ 米達爾', icon: 'train', qrKey: 'tr1', code: 'TDT-LX3-IU6' }, { btnName: '弗洛姆火車', kind: '火車票', name: '米達爾 ➔ 弗洛姆', icon: 'train', qrKey: '', code: '自由座' }, { btnName: '峽灣遊船', kind: '船票', name: '納柔依峽灣遊船', icon: 'ship', qrKey: 'boat1' }, { btnName: '梵谷博物館', kind: '門票', name: '梵谷博物館', icon: 'ticket', qrKey: 'a1', code: 'FQV282131' }, { btnName: '狗拉雪橇', kind: '活動門票', name: '狗拉雪橇冒險', icon: 'ticket', qrKey: 'a2', code: 'GYGWZA49GG6X' }, { btnName: '夢想之旅', kind: '活動門票', name: '南部攝影師之旅', icon: 'camera', qrKey: 'a3', code: 'GYGBLHXKGH83' },{ btnName: '卑爾根火車', kind: '火車票', name: '沃斯 ➔ 卑爾根', icon: 'train', qrKey: 'tr2', code: 'RX6-XG6-QWV' }];
                 const hotels = [{ id: 'h1', name: 'Modern House View', locationLabel: '特羅姆瑟', address: 'Balsfjordgata 41B, Tromsø', notes: '不用鑰匙，以密碼進入。' }, { id: 'h2', name: 'Thon Hotel Lofoten', locationLabel: '斯沃爾韋爾', address: 'Torget, Svolvær', notes: '餘款現場付。' }, { id: 'h3', name: 'Citybox Bergen City', locationLabel: '卑爾根', address: 'Nygårdsgaten 31, Bergen', notes: '抵達時支付。' }, { id: 'h4', name: 'Conscious Museum Square', locationLabel: '阿姆斯特丹', address: 'De Lairessestraat 7, Amsterdam', notes: '已全額付款。' }];
 
                 const activeFlight = computed(() => flights[activeFlightIndex.value] || flights[0]);
