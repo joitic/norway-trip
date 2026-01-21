@@ -368,7 +368,7 @@
                 ];
                 initialData[13] = [
                     { id: 1401, category: '火車', name: '卑爾根 → 米達爾', time: '08:08~10:00', place: 'Bergen → Myrdal', reminders: '座位：4車 29~34、37。\nRef: TDT-LX3-IU6。', ticketTarget: 0 },
-                    { id: 1402, category: '火車', name: '米達爾 → 弗洛姆', time: '10:15', place: 'Myrdal → Flåm', reminders: '下車去對面月台。', ticketTarget: 1 },
+                    { id: 1402, category: '火車', name: '米達爾 → 弗洛姆', time: '10:15~11:05', place: 'Myrdal → Flåm', reminders: '米蘭達站在對面月台轉車。自由座。坐第6車廂離瀑布最近。', ticketTarget: 1 },
                     { id: 1403, category: '乘船', name: '納柔依峽灣遊船', time: '14:45~16:45', place: 'Flåm → Gudvangen', reminders: '前 20 分鐘報到。', ticketTarget: 2 },
                     { id: 1404, category: '交通', name: '950號巴士 → 沃斯', time: '16:50~17:45', place: 'Gudvangen → Voss', direction: '950 to Voss', reminders: '上車刷卡。巴士會等船班。' },
 					{ id: 1405, category: '火車', name: '沃斯 → 卑爾根', time: '18:00~19:08', place: 'Voss → Bergen', reminders: '座位：4車 29~33、35~36。\nRef: RX6-XG6-QWV。', ticketTarget: 6 }
@@ -445,10 +445,18 @@
                     { no: 'LX 138', color: 'bg-[#e30613]', pnrGroup: { p1: 'YSOGJD', p2: 'YSOGJD', p3: 'YSK5FZ', p4: 'YSPTBQ', p5: 'YSPTBQ', p6: 'YSK5FZ', p7: 'YSK5FZ' }, from: 'ZRH', to: 'HKG', depTime: '22:40', arrTime: '17:45' },
                     { no: 'CX 464', color: 'bg-[#006564]', pnrGroup: { p1: 'YSOGJD', p2: 'YSOGJD', p3: 'YSK5FZ', p4: 'YSPTBQ', p5: 'YSPTBQ', p6: 'YSK5FZ', p7: 'YSK5FZ' }, from: 'HKG', to: 'TPE', depTime: '19:40', arrTime: '21:20' }
                 ];
-                const specialTickets = [{ btnName: '米達爾火車', kind: '火車票', name: '卑爾根 ➔ 米達爾', icon: 'train', qrKey: 'tr1', code: 'TDT-LX3-IU6' }, { btnName: '弗洛姆火車', kind: '火車票', name: '米達爾 ➔ 弗洛姆', icon: 'train', qrKey: '', code: '自由座' }, { btnName: '峽灣遊船', kind: '船票', name: '納柔依峽灣遊船', icon: 'ship', qrKey: 'boat1' }, { btnName: '梵谷博物館', kind: '門票', name: '梵谷博物館', icon: 'ticket', qrKey: 'a1', code: 'FQV282131' }, { btnName: '狗拉雪橇', kind: '活動門票', name: '狗拉雪橇冒險', icon: 'ticket', qrKey: 'a2', code: 'GYGWZA49GG6X' }, { btnName: '夢想之旅', kind: '活動門票', name: '南部攝影師之旅', icon: 'camera', qrKey: 'a3', code: 'GYGBLHXKGH83' },{ btnName: '卑爾根火車', kind: '火車票', name: '沃斯 ➔ 卑爾根', icon: 'train', qrKey: 'tr2', code: 'RX6-XG6-QWV' }];
+                const specialTickets = [
+				{ btnName: '米達爾火車', kind: '火車票', name: '卑爾根 ➔ 米達爾', icon: 'train', qrKey: 'tr1', code: 'TDT-LX3-IU6' }, 
+				{ btnName: '弗洛姆火車', kind: '火車票', name: '米達爾 ➔ 弗洛姆', icon: 'train', qrKey: 'tr3', code: 'OXQ-OMG-ARC' }, 
+				{ btnName: '峽灣遊船', kind: '船票', name: '納柔依峽灣遊船', icon: 'ship', qrKey: 'boat1' }, 
+				{ btnName: '梵谷博物館', kind: '門票', name: '梵谷博物館', icon: 'ticket', qrKey: 'a1', code: 'FQV282131' }, 
+				{ btnName: '狗拉雪橇', kind: '活動門票', name: '狗拉雪橇冒險', icon: 'ticket', qrKey: 'a2', code: 'GYGWZA49GG6X' }, 
+				{ btnName: '夢想之旅', kind: '活動門票', name: '南部攝影師之旅', icon: 'camera', qrKey: 'a3', code: 'GYGBLHXKGH83' },
+				{ btnName: '卑爾根火車', kind: '火車票', name: '沃斯 ➔ 卑爾根', icon: 'train', qrKey: 'tr2', code: 'RX6-XG6-QWV' }
+				];
                 const hotels = [
 				{ id: 'h1', name: 'Modern House View', locationLabel: '特羅姆瑟 · 1/23-1/29', code: 'Booking: 5533006813', address: 'Balsfjordgata 41B, Tromsø', notes: '不用鑰匙，以密碼進入。' }, 
-				{ id: 'h2', name: 'Thon Hotel Lofoten', locationLabel: '斯沃爾韋爾 · 1/29–2/3', code: 'Ref: 424027497', address: 'Torget, Svolvær', notes: '餘款現場付。' }, 
+				{ id: 'h2', name: 'Thon Hotel Lofoten', locationLabel: '斯沃爾韋爾 · 1/29–2/3', code: 'Ref: 424027497', address: 'Torget, Svolvær', notes: '餘款現場付。含早餐。' }, 
 				{ id: 'h3', name: 'Citybox Bergen City', locationLabel: '卑爾根 · 2/3–2/5', code: 'Ref: 285043', address: 'Nygårdsgaten 31, Bergen', notes: '抵達時支付。' }, 
 				{ id: 'h4', name: 'Conscious Museum Square', locationLabel: '阿姆斯特丹 · 2/5–2/9', code: 'Reservation ID: CMUS2415487~9', address: 'De Lairessestraat 7, Amsterdam', notes: '已全額付款。' }
 				];
