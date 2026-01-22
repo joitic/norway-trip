@@ -381,7 +381,7 @@
                 ];
                 initialData[14] = [
 				    { id: 1501, category: '交通', name: '1號巴士', time: '08:03', place: '飯店 → 機場', direction: '1 to Bergen lufthavn' }, 
-				    { id: 1502, category: '航班', name: 'KL 1164 卑爾根 → 阿姆斯特丹', time: '10:50', place: 'BGO → AMS', ticketTarget: 6 }, 
+				    { id: 1502, category: '航班', name: 'KL 1164 卑爾根 → 阿姆斯特丹', time: '10:50~12:35', place: 'BGO → AMS', ticketTarget: 6 }, 
 				    { id: 1503, category: '交通', name: '397號巴士', time: '13:34~13:58', place: 'Schiphol, Airport/Plaza → Concertgebouw', direction: '397 AMS Elandsgracht' }
 				];
                 initialData[15] = [
@@ -407,10 +407,10 @@
 
                 initialData[18] = [
 				    { id: 1901, category: '交通', name: '397號巴士', time: '16:54~17:26', place: 'Concertgebouw → Schiphol, Airport/Plaza', direction: '397 Nieuw-Vennep Getsewoud P+R' },
-                    { id: 1902, category: '航班', name: 'LX 735 阿姆斯特丹 → 蘇黎世', time: '20:00', place: 'AMS → ZRH', ticketTarget: 7 }, 
-					{ id: 1903, category: '航班', name: 'LX 138 蘇黎世 → 香港', time: '22:40', place: 'ZRH → HKG T1', reminders: '轉機 1h 10m!', ticketTarget: 8 }
+                    { id: 1902, category: '航班', name: 'LX 735 阿姆斯特丹 → 蘇黎世', time: '20:00~21:30', place: 'AMS → ZRH', ticketTarget: 7 }, 
+					{ id: 1903, category: '航班', name: 'LX 138 蘇黎世 → 香港', time: '22:40~17:45+1', place: 'ZRH → HKG T1', reminders: '轉機 1h 10m!', ticketTarget: 8 }
 					];
-                initialData[19] = [{ id: 2001, category: '航班', name: 'CX 464 香港 → 桃園', time: '19:40', place: 'HKG → TPE', ticketTarget: 9 }];
+                initialData[19] = [{ id: 2001, category: '航班', name: 'CX 464 香港 → 桃園', time: '19:40~21:20', place: 'HKG → TPE', ticketTarget: 9 }];
 
                 const safeLoad = (k, f) => { try { const s = localStorage.getItem(k); return s ? JSON.parse(s) : f; } catch(e) { return f; } };
                 const itineraryData = reactive(safeLoad('NORWAY_V8_FINAL', initialData));
