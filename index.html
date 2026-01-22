@@ -342,7 +342,7 @@
 					{ id: 401, category: '交通', name: '33號巴士', time: '09:42~09:48', place: 'Bjørnøygata → Telegrafbukta', direction: '33 Giæverbukta via Fagereng', reminders: '乘車時間約6分鐘。' },
 				    { id: 402, category: '活動', name: 'Telegrafbukta 海灣公園', time: '10:00', place: 'Telegrafbukta海灣公園', address: 'Strandvegen 206, Tromso, 挪威', reminders: '海灣公園景色很好，白天可看風景，晚上可看極光。' }
 					];
-                initialData[4] = [{ id: 501, category: '活動', name: '狗拉雪橇冒險', time: '09:30–16:30', place: 'Tromso Havn', address: 'Samuel Arnesens gate 5, Tromso', reminders: '9:15前在 Prostneset 大廳集合。\nGYGWZA49GG6X', ticketTarget: 4 }];
+                initialData[4] = [{ id: 501, category: '活動', name: '狗拉雪橇冒險', time: '09:30~16:30', place: 'Tromso Havn', address: 'Samuel Arnesens gate 5, Tromso', reminders: '9:15前在 Prostneset 大廳集合。\nGYGWZA49GG6X', ticketTarget: 4 }];
 				initialData[5] = [{ id: 601, category: '活動', name: 'Tromso市區特色建築', time: '10:00', address: 'Hjalmar Johansens gate 12, 9007 Tromsø, 挪威', reminders: '水族館Polaria、海事博物館MS Polstjerna、Tromso City Library。' }];
 				initialData[6] = [
 				    { id: 701, category: '交通', name: '42號巴士', time: '9:12~9:51', place: 'Polaria → Eidkjosen', direction: '42 Eidkjosen via Giæverbukta', reminders: '先走9分鐘到Polaria，搭大約40分鐘後在Eidkjosen轉425號巴士。' },
@@ -357,7 +357,14 @@
                     { id: 803, category: '航班', name: 'WF 817 特羅姆瑟 → 萊克內斯', time: '14:10~15:10', place: 'TOS → LKN', ticketTarget: 3 },
                     { id: 804, category: '交通', name: '741號巴士 → 市區', time: '16:01~17:25', place: 'Leknes sentrum → Svolvær sentrum (Lofotgata)', direction: '741 Svolvær sentrum via Hagvåg', reminders: '走6分鐘到Leknes sentrum，車程1.5 小時，坐到終點下車。' }
                 ];
-                initialData[8] = [{ id: 901, category: '活動', name: '南部攝影師之旅', time: '08:30–15:30', place: 'Svolvær - Reine - Hamnøy - Sakrisøy', address: 'Svolvær Tourist Information Office', reminders: '預訂：GYGBLHXKGH83', ticketTarget: 5 }];
+                initialData[8] = [{ id: 901, category: '活動', name: '南部攝影之旅', time: '08:30~15:30', place: 'Svolvær - Reine - Hamnøy - Sakrisøy', address: 'Svolvær Tourist Information Office', reminders: '預訂：GYGBLHXKGH83', ticketTarget: 5 }];
+				initialData[9] = [{ id: 1001, category: '活動', name: 'Trollfjord精靈峽灣+餵海鷹 (天氣好的話)', time: '09:30~15:30', place: '在Svolvær遊客中心詢問', address: 'Svolvær Tourist Information Office', reminders: '沒有預訂，彈性選擇。'}];
+				initialData[10] = [{ id: 1101, category: '活動', name: '攝影散步：港口、svolvær周邊小丘', time: '11:30~14:30', place: 'Svolvær 港口 - Svinøy Bridge - Svinøya Rorbuer', reminders: '天氣好的話散步拍照。天氣不好的話市區、博物館。'}];
+				initialData[11] = [
+				{ id: 1201, category: '交通', name: '743號巴士 → Henningsvær', time: '10:30~11:11', place: 'Svolvær sentrum (Lofotgata) → Henningsvær sentrum', reminders: '車程約40分鐘。'},
+				{ id: 1202, category: '活動', name: 'Henningsvær 漁村', time: '11:30~14:30', place: 'Henningsvær', reminders: '足球場。'},
+				{ id: 1203, category: '交通', name: '743號巴士 → 飯店', time: '15:51~16:40', place: 'Henningsvær sentrum → Svolvær sentrum (Lofotgata)', reminders: '車程約50分鐘。'}
+				];
                 initialData[12] = [
                     { id: 1301, category: '交通', name: '749號巴士 → 機場', time: '06:15~06:21', place: 'Svolvær sentrum (Lofotgata) → Svolvær lufthavn kryss', direction: '749 Fiskebøl ferjekai', reminders: '車程6分鐘，下車後再步行6分鐘到機場。' },
                     { id: 1302, category: '航班', name: 'WF 823 斯沃爾韋爾 → 博多', time: '09:35~10:00', place: 'SVJ → BOO', ticketTarget: 4 },
@@ -375,28 +382,39 @@
                 initialData[14] = [
 				    { id: 1501, category: '交通', name: '1號巴士', time: '08:03', place: '飯店 → 機場', direction: '1 to Bergen lufthavn' }, 
 				    { id: 1502, category: '航班', name: 'KL 1164 卑爾根 → 阿姆斯特丹', time: '10:50', place: 'BGO → AMS', ticketTarget: 6 }, 
-				    { id: 1503, category: '交通', name: '397號巴士', time: '13:27', place: '機場 → 市區', direction: '397 P+R Getsewoud Zuid' }
+				    { id: 1503, category: '交通', name: '397號巴士', time: '13:34~13:58', place: 'Schiphol, Airport/Plaza → Concertgebouw', direction: '397 AMS Elandsgracht' }
 				];
-                initialData[15] = [{ id: 1601, category: '活動', name: '梵谷博物館', time: '09:00', place: '阿姆斯特丹', address: 'Museumplein 6, Amsterdam', reminders: '門票已買，掃條碼入場，在樓下中庭服務台領取語音導覽設備。', ticketTarget: 3 }];
-                
+                initialData[15] = [
+				    { id: 1601, category: '活動', name: '上午：梵谷博物館', time: '09:00', place: '阿姆斯特丹', address: 'Museumplein 6, Amsterdam', reminders: '門票已買，掃條碼入場，在樓下中庭服務台領取語音導覽設備。', ticketTarget: 3 },
+					{ id: 1602, category: '活動', name: '下午：市中心運河區散步', time: '13:00', place: 'Dam Square - Royal Palace Amsterdam - Nine Streets - Singel Canal', reminders: '可以隨時坐下喝咖啡。'},
+				];
                 initialData[16] = [
-                    { id: 1701, category: '交通', name: '住宿→Amsterdam Zuid火車站', time: '07:33~07:41', place: 'Concertgebouw→Station Zuid Amsterdam', direction: 'Tram 5 Amstelveen Stadshart', reminders: '票價：€ 1.63' },
-                    { id: 1702, category: '交通', name: '阿姆斯特丹 → 鹿特丹', time: '08:37~09:40', place: 'Amsterdam Zuid → Rotterdam Blaak', direction: '3522 to Dordrecht', reminders: '7人團票，€ 8.07' },
-                    { id: 1703, category: '活動', name: '上午：鹿特丹市區景點參觀拍照', time: '09:50', place: '鹿特丹市區', reminders: '方塊屋、聖勞倫斯大教堂、Markthal 露天市集' },
-                    { id: 1704, category: '活動', name: '午餐：Markthal市場', time: '11:30', reminders: '推薦：鯡魚三明治 Broodje Haring、荷蘭薯條 Patat Friet、荷蘭煎餅 Poffertjes、卡諾里卷 Cannoli。' },
-                    { id: 1705, category: '交通', name: 'WaterShuttle → 小孩堤防', time: '13:15~13:45', place: 'Willemskade', address: 'Willemskade, 3016 DM Rotterdam', direction: 'to Kinderdijk, Molenkade', reminders: '單程票€ 9.75，可以選擇買水上巴士+小孩堤防的套票€ 32.50' },
-                    { id: 1706, category: '活動', name: '下午：小孩堤防', time: '13:45', place: '小孩堤防', reminders: '風車群博物館。' },
-                    { id: 1707, category: '交通', name: 'WaterShuttle → 鹿特丹', time: '16:45~17:15', place: 'Molenkade', address: 'Molenkade, 2941 EH Kinderdijk', direction: 'to Rotterdam, Erasmusbrug', reminders: '單程票€ 9.75' },
-                    { id: 1708, category: '活動', name: '晚餐：鹿特丹車站附近', time: '17:30' },
-                    { id: 1709, category: '交通', name: '鹿特丹 → 阿姆斯特丹', time: '18:56~19:53', place: 'Rotterdam ➔ Amsterdam Zuid', direction: '3573 to Venlo', reminders: '團票 € 8.07。下一班 19:26~20:23。' }
+				    { id: 1701, category: '活動', name: '上午：Jordaan區', time: '09:00', place: 'Jordaan區', reminders: '運河與建築' }, 
+				    { id: 1702, category: '活動', name: 'Noordermarkt 市集', time: '中午前', address: 'Noordermarkt, 1015 MZ Amsterdam, 荷蘭' }, 
+				    { id: 1703, category: '活動', name: '下午：安妮之家', time: '16:30', address: 'Westermarkt 20, 1016 GV Amsterdam, 荷蘭', reminders: '要先買票(還沒買)' }
+				];
+                initialData[17] = [
+                    { id: 1801, category: '交通', name: '住宿 → Amsterdam Zuid火車站', time: '07:33~07:41', place: 'Concertgebouw → Station Zuid Amsterdam', direction: 'Tram 5 Amstelveen Stadshart', reminders: '票價：€ 1.63' },
+                    { id: 1802, category: '交通', name: '阿姆斯特丹 → 鹿特丹', time: '08:37~09:40', place: 'Amsterdam Zuid → Rotterdam Blaak', direction: '3522 to Dordrecht', reminders: '7人團票，€ 8.07' },
+                    { id: 1803, category: '活動', name: '上午：鹿特丹市區景點參觀拍照', time: '09:50', place: '鹿特丹市區', reminders: '方塊屋、聖勞倫斯大教堂、Markthal 露天市集' },
+                    { id: 1804, category: '活動', name: '午餐：Markthal市場', time: '11:30', reminders: '推薦：鯡魚三明治 Broodje Haring、荷蘭薯條 Patat Friet、荷蘭煎餅 Poffertjes、卡諾里卷 Cannoli。' },
+                    { id: 1805, category: '交通', name: 'WaterShuttle → 小孩堤防', time: '13:15~13:45', place: 'Willemskade', address: 'Willemskade, 3016 DM Rotterdam', direction: 'to Kinderdijk, Molenkade', reminders: '單程票€ 9.75，可以選擇買水上巴士+小孩堤防的套票€ 32.50' },
+                    { id: 1806, category: '活動', name: '下午：小孩堤防', time: '13:45', place: '小孩堤防', reminders: '風車群博物館。' },
+                    { id: 1807, category: '交通', name: 'WaterShuttle → 鹿特丹', time: '16:45~17:15', place: 'Molenkade', address: 'Molenkade, 2941 EH Kinderdijk', direction: 'to Rotterdam, Erasmusbrug', reminders: '單程票€ 9.75' },
+                    { id: 1808, category: '活動', name: '晚餐：鹿特丹車站附近', time: '17:30' },
+                    { id: 1809, category: '交通', name: '鹿特丹 → 阿姆斯特丹', time: '18:56~19:53', place: 'Rotterdam ➔ Amsterdam Zuid', direction: '3573 to Venlo', reminders: '團票 € 8.07。下一班 19:26~20:23。' }
                 ];
 
-                initialData[18] = [{ id: 1901, category: '航班', name: 'LX 735 阿姆斯特丹 → 蘇黎世', time: '20:00', place: 'AMS → ZRH', ticketTarget: 7 }, { id: 1902, category: '航班', name: 'LX 138 蘇黎世 → 香港', time: '22:40', place: 'ZRH → HKG T1', reminders: '轉機 1h 10m!', ticketTarget: 8 }];
+                initialData[18] = [
+				    { id: 1901, category: '交通', name: '397號巴士', time: '16:54~17:26', place: 'Concertgebouw → Schiphol, Airport/Plaza', direction: '397 Nieuw-Vennep Getsewoud P+R' },
+                    { id: 1902, category: '航班', name: 'LX 735 阿姆斯特丹 → 蘇黎世', time: '20:00', place: 'AMS → ZRH', ticketTarget: 7 }, 
+					{ id: 1903, category: '航班', name: 'LX 138 蘇黎世 → 香港', time: '22:40', place: 'ZRH → HKG T1', reminders: '轉機 1h 10m!', ticketTarget: 8 }
+					];
                 initialData[19] = [{ id: 2001, category: '航班', name: 'CX 464 香港 → 桃園', time: '19:40', place: 'HKG → TPE', ticketTarget: 9 }];
 
                 const safeLoad = (k, f) => { try { const s = localStorage.getItem(k); return s ? JSON.parse(s) : f; } catch(e) { return f; } };
                 const itineraryData = reactive(safeLoad('NORWAY_V8_FINAL', initialData));
-                const shoppingList = ref(safeLoad('SHOP_V9_FINAL', [
+                const shoppingList = ref(safeLoad('SHOP_V9', [
 				{ 
                         name: 'Kvikk Lunsj 巧克力', 
                         image: 'https://pbs.twimg.com/media/G5qANkJWwAETtRp.jpg' 
@@ -408,12 +426,12 @@
 
                 const travelDays = Array.from({length: 20}, (_, i) => {
                     const ds = ['1/22(四)','1/23(五)','1/24(六)','1/25(日)','1/26(一)','1/27(二)','1/28(三)','1/29(四)','1/30(五)','1/31(六)','2/1(日)','2/2(一)','2/3(二)','2/4(三)','2/5(四)','2/6(五)','2/7(六)','2/8(日)','2/9(一)','2/10(二)'];
-                    const ts = ['出發 / 抵達','抵達 / 景點','景點','景點','狗拉雪橇冒險','景點','景點','移動日','南部攝影師之旅','自由時間','自由時間','自由時間','移動日','挪威縮影','移動日','博物館','鹿特丹市區 / 小孩堤防','自由行程','景點 / 返程','返程'];
+                    const ts = ['出發 / 抵達','抵達 / 景點','景點','景點','狗拉雪橇冒險','景點','景點','移動日','南部攝影之旅','自由時間','自由時間','自由時間','移動日','挪威縮影','移動日','梵谷博物館','阿姆斯特丹市區 / 安妮之家','鹿特丹市區 / 小孩堤防','景點 / 返程','返程'];
                     return { label: `D${i+1} · ${ds[i]}`, dateLabel: `D${i+1} · ${ds[i]}`, title: ts[i], date: ds[i] };
                 });
 
                 watch(itineraryData, (v) => localStorage.setItem('NORWAY_V8_FINAL', JSON.stringify(v)), { deep: true });
-                watch(shoppingList, (v) => localStorage.setItem('SHOP_V9_FINAL', JSON.stringify(v)), { deep: true });
+                watch(shoppingList, (v) => localStorage.setItem('SHOP_V9', JSON.stringify(v)), { deep: true });
                 watch(nokList, (v) => localStorage.setItem('NOK_V8_FINAL', JSON.stringify(v)), { deep: true });
                 watch(eurList, (v) => localStorage.setItem('EUR_V8_FINAL', JSON.stringify(v)), { deep: true });
 
@@ -454,7 +472,7 @@
 				{ btnName: '峽灣遊船', kind: '船票', name: '納柔依峽灣遊船', icon: 'ship', qrKey: 'boat1' }, 
 				{ btnName: '梵谷博物館', kind: '門票', name: '梵谷博物館', icon: 'ticket', qrKey: 'a1', code: 'FQV282131' }, 
 				{ btnName: '狗拉雪橇', kind: '活動門票', name: '狗拉雪橇冒險', icon: 'ticket', qrKey: 'a2', code: 'GYGWZA49GG6X' }, 
-				{ btnName: '夢想之旅', kind: '活動門票', name: '南部攝影師之旅', icon: 'camera', qrKey: 'a3', code: 'GYGBLHXKGH83' },
+				{ btnName: '夢想之旅', kind: '活動門票', name: '南部攝影之旅', icon: 'camera', qrKey: 'a3', code: 'GYGBLHXKGH83' },
 				{ btnName: '卑爾根火車', kind: '火車票', name: '沃斯 ➔ 卑爾根', icon: 'train', qrKey: 'tr2', code: 'RX6-XG6-QWV' }
 				];
                 const hotels = [
